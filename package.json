@@ -9,6 +9,7 @@
 		"url": "https://github.com/errata-ai"
 	},
 	"publisher": "errata-ai",
+	"license": "MIT",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/errata-ai/vale-vscode.git"
