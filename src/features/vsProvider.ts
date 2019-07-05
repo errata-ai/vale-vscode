@@ -8,10 +8,14 @@ import {
     DiagnosticCollection,
     DiagnosticSeverity,
     Range,
+    Position,
     TextDocument,
     Disposable,
     languages,
-    workspace
+    workspace,
+    DiagnosticRelatedInformation,
+    Location,
+    Uri
 } from "vscode";
 
 /**
@@ -28,13 +32,6 @@ interface IValeErrorJSON {
     readonly Message: string;
     readonly Span: [number, number];
     readonly Severity: ValeSeverity;
-}
-
-/**
- * The type of Vale’s JSON output.
- */
-interface IValeJSON {
-    readonly [propName: string]: ReadonlyArray<IValeErrorJSON>;
 }
 
 /**
@@ -56,22 +53,34 @@ const toSeverity = (severity: ValeSeverity): DiagnosticSeverity => {
 /**
  * Convert a Vale error to a code diagnostic.
  *
- * @param message The message to convert
+ * @param alert The alert to convert
  */
-const toDiagnostic = (error: IValeErrorJSON): Diagnostic => {
+const toDiagnostic = (alert: IValeErrorJSON, styles: string): Diagnostic => {
     const range = new Range(
-        error.Line - 1, error.Span[0] - 1,
-        error.Line - 1, error.Span[1]);
+        alert.Line - 1, alert.Span[0] - 1,
+        alert.Line - 1, alert.Span[1]);
     const diagnostic = new Diagnostic(
-        range, error.Message, toSeverity(error.Severity));
+        range, alert.Message, toSeverity(alert.Severity));
+
     diagnostic.source = "Vale Server";
-    diagnostic.code = error.Check;
+    diagnostic.code = alert.Check;
+
+    const name = alert.Check.split('.');
+    const rule = path.join(styles, name[0], name[1] + '.yml');
+
+    diagnostic.relatedInformation = [
+        new DiagnosticRelatedInformation(new Location(
+            Uri.file(rule), new Position(0, 0)),
+            'View rule'
+        )];
+
     return diagnostic;
 };
 
 export default class ValeServerProvider {
 
     private diagnosticCollection!: DiagnosticCollection;
+    private stylesPath!: string;
     private command!: Disposable;
 
     private doVale(textDocument: TextDocument) {
@@ -98,16 +107,28 @@ export default class ValeServerProvider {
 
                 const diagnostics: Diagnostic[] = [];
                 for (var i = 0; i < alerts.length; ++i) {
-                    diagnostics.push(toDiagnostic(alerts[i]));
+                    diagnostics.push(toDiagnostic(alerts[i], this.stylesPath));
                 }
 
                 this.diagnosticCollection.set(textDocument.uri, diagnostics);
             });
     }
 
-    public activate(subscriptions: Disposable[]) {
+    public async activate(subscriptions: Disposable[]) {
         subscriptions.push(this);
+
         this.diagnosticCollection = languages.createDiagnosticCollection();
+        await request.get({
+            // TODO: Expose this as a setting.
+            uri: 'http://localhost:7777/path',
+            json: true
+        })
+        .catch((error) => {
+            throw new Error(`Vale Server could not connect: ${error}.`);
+        })
+        .then((body) => {
+            this.stylesPath = body.path;
+        });
 
         workspace.onDidOpenTextDocument(this.doVale, this, subscriptions);
         workspace.onDidCloseTextDocument((textDocument) => {
