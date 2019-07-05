@@ -4,6 +4,6 @@ All notable changes to the "vale-server" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## v1.0.0 [07/05/19]
 
 - Initial release
