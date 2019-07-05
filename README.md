@@ -1,6 +1,4 @@
-# vale-server README
-
-This is the README for your extension "vale-server". After writing up a brief description, we recommend including the following sections.
+# Vale Server for VS Code
 
 ## Features
 

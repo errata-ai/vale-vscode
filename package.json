@@ -2,23 +2,18 @@
 	"name": "vale-server",
 	"displayName": "Vale Server",
 	"description": "A Visual Studio Code client for Vale Server.",
-	"version": "0.0.1",
+	"version": "0.1.0",
 	"engines": {
 		"vscode": "^1.36.0"
 	},
 	"categories": [
-		"Other"
+		"Linters"
 	],
 	"activationEvents": [
-		"onCommand:extension.helloWorld"
+		"onLanguage:plaintext"
 	],
 	"main": "./out/extension.js",
-	"contributes": {
-		"commands": [{
-			"command": "extension.helloWorld",
-			"title": "Hello World"
-		}]
-	},
+	"contributes": {},
 	"scripts": {
 		"vscode:prepublish": "yarn run compile",
 		"compile": "tsc -p ./",
@@ -36,5 +31,10 @@
 		"typescript": "^3.3.1",
 		"tslint": "^5.12.1",
 		"vscode-test": "^1.0.0-next.0"
+	},
+	"dependencies": {
+		"@types/request-promise-native": "^1.0.16",
+		"request": "^2.88.0",
+		"request-promise-native": "^1.0.7"
 	}
 }
