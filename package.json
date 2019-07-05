@@ -1,6 +1,7 @@
 {
 	"name": "vale-server",
 	"displayName": "Vale Server",
+	"icon": "src/icon.png",
 	"description": "A Visual Studio Code client for Vale Server.",
 	"bugs": "https://github.com/errata-ai/vale-vscode/issues",
 	"author": {
