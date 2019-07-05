@@ -2,6 +2,17 @@
 	"name": "vale-server",
 	"displayName": "Vale Server",
 	"description": "A Visual Studio Code client for Vale Server.",
+	"bugs": "https://github.com/errata-ai/vale-vscode/issues",
+	"author": {
+		"name": "Joseph Kato",
+		"email": "support@errata.ai",
+		"url": "https://github.com/errata-ai"
+	},
+	"publisher": "errata-ai",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/errata-ai/vale-vscode.git"
+	},
 	"version": "0.1.0",
 	"engines": {
 		"vscode": "^1.36.0"
