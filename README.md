@@ -34,3 +34,7 @@ To get started,
         <td width="50%">Easily navigate to any rule's implementation.</td>
     </tr>
 </table>
+
+## Credits
+
+> This extension was inspired by [@lunaryorn](https://github.com/lunaryorn)'s work on the [vscode-vale](https://github.com/lunaryorn/vscode-vale) extension.
