@@ -29,7 +29,7 @@ To get started,
     </tr>
     <tr>
         <td width="50%">
-          This package makes full use of AtomLinter v2.0.0's new features, providing detailed information for each alert.
+          Browse detailed information for each alert.
         </td>
         <td width="50%">Easily navigate to any rule's implementation.</td>
     </tr>
