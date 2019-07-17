@@ -2,8 +2,10 @@
 
 All notable changes to the "vale-server" extension will be documented in this file.
 
-Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
+## v0.2.0
 
-## v1.0.0 [07/05/19]
+- Add support for Compatibility Mode
+
+## v0.1.0 [07/05/19]
 
 - Initial release

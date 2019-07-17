@@ -90,27 +90,29 @@ export default class ValeServerProvider {
             return;
         }
 
-        request.post({
-            // TODO: Expose this as a setting.
-            uri: 'http://localhost:7777/vale',
-            qs: {
+        request
+            .post({
+              // TODO: Expose this as a setting.
+              uri: 'http://localhost:7777/vale',
+              qs: {
                 text: textDocument.getText(),
-                format: ext
-            },
-            json: true
-        })
+                format: ext,
+                path: path.dirname(textDocument.fileName)
+              },
+              json: true
+            })
             .catch((error) => {
-                throw new Error(`Vale Server could not connect: ${error}.`);
+              throw new Error(`Vale Server could not connect: ${error}.`);
             })
             .then((body) => {
-                const alerts = body[`stdin${ext}`];
+              const alerts = body[`stdin${ext}`];
 
-                const diagnostics: Diagnostic[] = [];
-                for (var i = 0; i < alerts.length; ++i) {
-                    diagnostics.push(toDiagnostic(alerts[i], this.stylesPath));
-                }
+              const diagnostics: Diagnostic[] = [];
+              for (var i = 0; i < alerts.length; ++i) {
+                diagnostics.push(toDiagnostic(alerts[i], this.stylesPath));
+              }
 
-                this.diagnosticCollection.set(textDocument.uri, diagnostics);
+              this.diagnosticCollection.set(textDocument.uri, diagnostics);
             });
     }
 
