@@ -105,11 +105,12 @@ export default class ValeServerProvider {
               throw new Error(`Vale Server could not connect: ${error}.`);
             })
             .then((body) => {
-              const alerts = body[`stdin${ext}`];
-
               const diagnostics: Diagnostic[] = [];
-              for (var i = 0; i < alerts.length; ++i) {
-                diagnostics.push(toDiagnostic(alerts[i], this.stylesPath));
+              for (let key in body) {
+                const alerts = body[key];
+                for (var i = 0; i < alerts.length; ++i) {
+                  diagnostics.push(toDiagnostic(alerts[i], this.stylesPath));
+                }
               }
 
               this.diagnosticCollection.set(textDocument.uri, diagnostics);
