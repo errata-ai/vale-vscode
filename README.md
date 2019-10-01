@@ -6,7 +6,7 @@ To get started,
 
 1. Install [Vale Server](https://errata.ai/vale-server/); then
 
-2. install `vale-server` via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server).
+2. install `vale-server` via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server) (you may need to restart VS Code).
 
 ## Features
 
