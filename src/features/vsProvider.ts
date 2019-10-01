@@ -1,6 +1,7 @@
 'use strict';
 
 import * as path from 'path';
+import * as fs from 'fs';
 import * as request from 'request-promise-native';
 
 import {CancellationToken, CodeActionContext, CodeActionProvider, CodeAction, CodeActionKind, Command, commands, Diagnostic, DiagnosticCollection, DiagnosticSeverity, Range, Position, TextDocument, Disposable, languages, workspace, window, WorkspaceEdit, DiagnosticRelatedInformation, Location, Uri} from 'vscode';
@@ -72,10 +73,12 @@ const toDiagnostic = (alert: IValeErrorJSON, styles: string): Diagnostic => {
   diagnostic.code = alert.Check;
 
   const name = alert.Check.split('.');
-  const rule = path.join(styles, name[0], name[1] + '.yml');
+  const rule = Uri.file(path.join(styles, name[0], name[1] + '.yml'));
 
-  diagnostic.relatedInformation = [new DiagnosticRelatedInformation(
-      new Location(Uri.file(rule), new Position(0, 0)), 'View rule')];
+  if (fs.existsSync(rule.fsPath)) {
+    diagnostic.relatedInformation = [new DiagnosticRelatedInformation(
+        new Location(rule, new Position(0, 0)), 'View rule')];
+  }
 
   return diagnostic;
 };
