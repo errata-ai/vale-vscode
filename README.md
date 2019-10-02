@@ -2,7 +2,7 @@
 
 > The official Visual Studio Code extension for [Vale Server](https://errata.ai/vale-server/).
 
-The Vale Server Visual Studio Code extension provides customizable spelling, style, and grammar checking for English text.
+The Vale Server extension provides customizable spelling, style, and grammar checking for English text.
 
 ## Installation
 
@@ -33,12 +33,60 @@ To get started,
     </tr>
     <tr>
         <td width="50%">
-          Browse detailed information for each alert.
+            Browse detailed information for each alert.
         </td>
         <td width="50%">Easily navigate to any rule's implementation.</td>
+    </tr>
+    <tr>
+        <th>Quick Fixes</th>
+        <th>Build your own style according to <a href="https://errata-ai.github.io/vale-server/docs/style">custom rules</a></th>
+    </tr>
+    <tr>
+        <td width="50%">
+            <a href="https://user-images.githubusercontent.com/8785025/66071464-0c472900-e508-11e9-882f-5b83011d0a92.png">
+                <img src="https://user-images.githubusercontent.com/8785025/66071464-0c472900-e508-11e9-882f-5b83011d0a92.png" width="100%">
+            </a>
+        </td>
+        <td width="50%">
+            <a href="https://user-images.githubusercontent.com/8785025/66071907-d9e9fb80-e508-11e9-80ec-62b7a08d27cb.png">
+                <img src="https://user-images.githubusercontent.com/8785025/66071907-d9e9fb80-e508-11e9-80ec-62b7a08d27cb.png" width="100%">
+            </a>
+        </td>
+    </tr>
+    <tr>
+        <td width="50%">Choose from a selection of provided 'Quick Fixes'.</td>
+        <td width="50%">Implement your own rules or follow an existing style guide.</td>
     </tr>
 </table>
 
 ## Settings
 
+The following settings are currently available:
 
+```json
+{
+   "properties":{
+      "vale-server.serverURL":{
+         "type":"string",
+         "default":"http://localhost:7777",
+         "description":"URL to your running Vale Server instance."
+      },
+      "vale-server.extensions":{
+         "type":[
+            "string",
+            "array"
+         ],
+         "items":{
+            "type":"string"
+         },
+         "default":[
+            ".md",
+            ".rst",
+            ".adoc",
+            ".txt"
+         ],
+         "description":"File extensions to lint."
+      }
+   }
+}
+```
