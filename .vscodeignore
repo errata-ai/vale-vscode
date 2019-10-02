@@ -1,4 +1,4 @@
-.vscode/**
+.vscode/*.json
 .vscode-test/**
 out/test/**
 src/**
