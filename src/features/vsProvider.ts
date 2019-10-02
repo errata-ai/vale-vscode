@@ -83,6 +83,18 @@ const toDiagnostic = (alert: IValeErrorJSON, styles: string): Diagnostic => {
   return diagnostic;
 };
 
+/**
+ * Get the given setting from the user's config.
+ *
+ * @param setting The name of the setting
+ * @param fallback The default value
+ */
+const getWithDefault = (setting: string, fallback: string): string => {
+  return workspace.getConfiguration('vale-server')
+      .get(setting, fallback)
+      .replace(/\/+$/, '');
+};
+
 export default class ValeServerProvider implements CodeActionProvider {
   private diagnosticCollection!: DiagnosticCollection;
   private alertMap: Record<string, IValeErrorJSON> = {};
@@ -94,17 +106,19 @@ export default class ValeServerProvider implements CodeActionProvider {
 
   private doVale(textDocument: TextDocument) {
     const ext = path.extname(textDocument.fileName);
-    // TODO: Expose as a setting.
-    if (['.md', '.rst', '.adoc', '.txt'].indexOf(ext) < 0) {
+    const supported = workspace.getConfiguration('vale-server').get(
+      'extensions', ['.md', '.rst', '.adoc', '.txt']);
+
+    if (supported.indexOf(ext) < 0) {
       return;
     }
     // Reset out alert map:
     this.alertMap = {};
 
+    let server: string = getWithDefault('serverURL', 'http://localhost:7777');
     request
         .post({
-          // TODO: Expose this as a setting.
-          uri: 'http://localhost:7777/vale',
+          uri: server + '/vale',
           qs: {
             text: textDocument.getText(),
             format: ext,
@@ -140,10 +154,10 @@ export default class ValeServerProvider implements CodeActionProvider {
     let alert = this.alertMap[key];
     let actions: CodeAction[] = [];
 
+    let server: string = getWithDefault('serverURL', 'http://localhost:7777');
     await request
         .post({
-          // TODO: Expose this as a setting.
-          uri: 'http://localhost:7777/suggest',
+          uri: server + '/suggest',
           qs: {alert: JSON.stringify(alert)},
           json: true
         })
@@ -215,10 +229,11 @@ export default class ValeServerProvider implements CodeActionProvider {
     subscriptions.push(this);
 
     this.diagnosticCollection = languages.createDiagnosticCollection();
+
+    let server: string = getWithDefault('serverURL', 'http://localhost:7777');
     await request
         .get({
-          // TODO: Expose this as a setting.
-          uri: 'http://localhost:7777/path',
+          uri: server + '/path',
           json: true
         })
         .catch((error) => {

@@ -1,12 +1,16 @@
 # Vale Server for VS Code
 
-> A Visual Studio Code client for [Vale Server](https://errata.ai/vale-server/).
+> The official Visual Studio Code extension for [Vale Server](https://errata.ai/vale-server/).
+
+The Vale Server Visual Studio Code extension provides customizable spelling, style, and grammar checking for English text.
+
+## Installation
 
 To get started,
 
-1. Install [Vale Server](https://errata.ai/vale-server/); then
-
-2. install `vale-server` via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server).
+1. Install [Vale Server](https://errata.ai/vale-server/);
+2. install `vale-server` via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server); and
+3. restart VS Code (if necessary).
 
 ## Features
 
@@ -35,6 +39,6 @@ To get started,
     </tr>
 </table>
 
-## Credits
+## Settings
 
-> This extension was inspired by [@lunaryorn](https://github.com/lunaryorn)'s work on the [vscode-vale](https://github.com/lunaryorn/vscode-vale) extension.
+
