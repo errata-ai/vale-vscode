@@ -1,5 +1,7 @@
 'use strict';
 
+// npm run webpack
+
 import * as path from 'path';
 import * as fs from 'fs';
 import * as request from 'request-promise-native';
@@ -66,6 +68,7 @@ const toTitle = (alert: IValeErrorJSON, suggestion: string): string => {
 const toDiagnostic = (alert: IValeErrorJSON, styles: string): Diagnostic => {
   const range = new Range(
       alert.Line - 1, alert.Span[0] - 1, alert.Line - 1, alert.Span[1]);
+
   const diagnostic =
       new Diagnostic(range, alert.Message, toSeverity(alert.Severity));
 
@@ -115,21 +118,29 @@ export default class ValeServerProvider implements CodeActionProvider {
     // Reset out alert map:
     this.alertMap = {};
 
-    let server: string = getWithDefault('serverURL', 'http://localhost:7777');
+    if (!textDocument.fileName.length) {
+      window.showErrorMessage('Please save the file before linting.');
+      return;
+    }
+
+    let server: string = getWithDefault('serverURL', 'http://127.0.0.1:7777');
     request
         .post({
-          uri: server + '/vale',
+          uri: server + '/file',
           qs: {
-            text: textDocument.getText(),
-            format: ext,
+            file: textDocument.fileName,
             path: path.dirname(textDocument.fileName)
           },
           json: true
         })
         .catch((error) => {
-          throw new Error(`Vale Server could not connect: ${error}.`);
+          window.showErrorMessage(`Vale Server could not connect: ${error}.`);
+          window.showErrorMessage(`Also note that this extension now requires Vale Server v1.4+.`);
         })
         .then((body) => {
+          var contents = fs.readFileSync(body.path);
+          body = JSON.parse(contents.toString());
+
           const diagnostics: Diagnostic[] = [];
           for (let key in body) {
             const alerts = body[key];
@@ -149,10 +160,14 @@ export default class ValeServerProvider implements CodeActionProvider {
       document: TextDocument, range: Range, context: CodeActionContext,
       token: CancellationToken): Promise<CodeAction[]> {
     let diagnostic: Diagnostic = context.diagnostics[0];
-    let key = `${diagnostic.message}-${diagnostic.range}`;
-
-    let alert = this.alertMap[key];
     let actions: CodeAction[] = [];
+
+    if (diagnostic === undefined) {
+      return actions;
+    }
+
+    let key = `${diagnostic.message}-${diagnostic.range}`;
+    let alert = this.alertMap[key];
 
     let server: string = getWithDefault('serverURL', 'http://localhost:7777');
     await request

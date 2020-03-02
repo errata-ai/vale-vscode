@@ -33,7 +33,7 @@
 			"properties": {
 				"vale-server.serverURL": {
 					"type": "string",
-					"default": "http://localhost:7777",
+					"default": "http://127.0.0.1:7777",
 					"description": "URL to your running Vale Server instance."
 				},
 				"vale-server.extensions": {
