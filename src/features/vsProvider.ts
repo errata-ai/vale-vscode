@@ -135,7 +135,7 @@ export default class ValeServerProvider implements CodeActionProvider {
         })
         .catch((error) => {
           window.showErrorMessage(`Vale Server could not connect: ${error}.`);
-          window.showErrorMessage(`Also note that this extension now requires Vale Server v1.4+.`);
+          window.showErrorMessage(`Please note that Vale Server v1.4+ is required.`);
         })
         .then((body) => {
           var contents = fs.readFileSync(body.path);
