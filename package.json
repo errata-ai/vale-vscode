@@ -31,6 +31,11 @@
 			"type": "object",
 			"title": "Vale Server Configuration",
 			"properties": {
+				"vale-server.useCLI": {
+					"type": "boolean",
+					"default": false,
+					"description": "Use Vale's CLI instead of Vale Server."
+				},
 				"vale-server.serverURL": {
 					"type": "string",
 					"default": "http://127.0.0.1:7777",
