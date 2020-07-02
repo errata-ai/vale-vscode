@@ -4,8 +4,15 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as request from 'request-promise-native';
 
-import * as vscode from 'vscode';
+import * as which from "which";
+import { execFile } from "child_process";
 
+import * as vscode from 'vscode';
+import {
+  workspace,
+  WorkspaceFolder,
+} from "vscode";
+// Consolidate
 /**
  * A severity from Vale Server.
  */
@@ -17,6 +24,14 @@ type ValeSeverity = 'suggestion'|'warning'|'error';
 interface IValeActionJSON {
   readonly Name: string;
   readonly Params: [string];
+}
+
+// Really needed?
+/**
+ * The type of Vale’s JSON output.
+ */
+interface IValeJSON {
+  readonly [propName: string]: ReadonlyArray<IValeErrorJSON>;
 }
 
 /**
@@ -33,6 +48,24 @@ interface IValeErrorJSON {
   readonly Span: [number, number];
   readonly Severity: ValeSeverity;
 }
+
+const readBinaryLocation = () => {
+  const configuration = workspace.getConfiguration();
+  const customBinaryPath = configuration.get<string>("vale-server.path");
+  if (customBinaryPath) {
+    return path.normalize(customBinaryPath);
+  }
+  // Assume that the binary is installed globally
+  return which.sync("vale", { pathExt: ".cmd" });
+};
+
+const readFileLocation = () => {
+  const configuration = workspace.getConfiguration();
+  const customConfigPath = configuration.get<string>("vale-server.configPath");
+
+  // Assume that the binary is installed globally
+  return customConfigPath;
+};
 
 /**
  * Convert a Vale severity string to a code diagnostic severity.
@@ -76,7 +109,7 @@ const toDiagnostic = (alert: IValeErrorJSON, styles: string): vscode.Diagnostic 
   const diagnostic =
       new vscode.Diagnostic(range, alert.Message, toSeverity(alert.Severity));
 
-  diagnostic.source = 'Vale Server';
+  diagnostic.source = 'Vale';
   diagnostic.code = alert.Check;
 
   const name = alert.Check.split('.');
@@ -86,7 +119,6 @@ const toDiagnostic = (alert: IValeErrorJSON, styles: string): vscode.Diagnostic 
     diagnostic.relatedInformation = [new vscode.DiagnosticRelatedInformation(
         new vscode.Location(rule, new vscode.Position(0, 0)), 'View rule')];
   }
-
   return diagnostic;
 };
 
@@ -102,6 +134,40 @@ const getWithDefault = (setting: string, fallback: string): string => {
       .replace(/\/+$/, '');
 };
 
+/**
+ * Run a command in a given workspace folder and get its standard output.
+ *
+ * If the workspace folder is undefined run the command in the working directory
+ * of the current vscode instance.
+ *
+ * @param folder The workspace
+ * @param command The command array
+ * @return The standard output of the program
+ */
+const runInWorkspace = (
+  folder: WorkspaceFolder | undefined,
+  command: ReadonlyArray<string>,
+): Promise<string> =>
+  new Promise((resolve, reject) => {
+      const cwd = folder ? folder.uri.fsPath : process.cwd();
+      const maxBuffer = 10 * 1024 * 1024; // 10MB buffer for large results
+      execFile(
+          command[0],
+          command.slice(1),
+          { cwd, maxBuffer },
+          (error, stdout) => {
+              if (error) {
+                  // Throw system errors, but do not fail if the command
+                  // fails with a non-zero exit code.
+                  console.error("Command error", command, error);
+                  reject(error);
+              } else {
+                  resolve(stdout);
+              }
+          },
+      );
+  });
+
 export default class ValeServerProvider implements vscode.CodeActionProvider {
   private diagnosticCollection!: vscode.DiagnosticCollection;
   private alertMap: Record<string, IValeErrorJSON> = {};
@@ -112,7 +178,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   private static commandId: string = 'ValeServerProvider.runCodeAction';
   private command!: vscode.Disposable;
 
-  private doVale(textDocument: vscode.TextDocument) {
+  private async doVale(textDocument: vscode.TextDocument) {
     const ext = path.extname(textDocument.fileName);
     const supported =
         vscode.workspace.getConfiguration('vale-server').get('extensions', [
@@ -152,21 +218,48 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
           });
       } else {
         // We're using the CLI ...
-        //
-        // TODO
+        try {
+          const result = await this.runVale(textDocument);
+      } catch (error) {
+        // TODO: Error handling
+      }
+
       }
   }
 
+  private async runVale (file: vscode.TextDocument) {
+    const binaryLocation = readBinaryLocation();
+    const configLocation = readFileLocation()!;
+    // TODO: Hmm
+    this.stylesPath = "/Users/chrisward/Workspace/TesttheDocs";
+
+    const command: ReadonlyArray<string> = [
+        binaryLocation,
+        "--no-exit",
+        "--config",
+        configLocation,
+        "--output",
+        "JSON",
+        file.fileName,
+    ];
+    console.info("Run vale as", command);
+    const stdout = await runInWorkspace(undefined, command);
+    this.handleJSON(stdout.toString(), file);
+}
+
   private handleJSON(contents: string, textDocument: vscode.TextDocument) {
+    const diagnostics: vscode.Diagnostic[] = [];
     let body = JSON.parse(contents.toString());
 
-    const diagnostics: vscode.Diagnostic[] = [];
     for (let key in body) {
       const alerts = body[key];
       for (var i = 0; i < alerts.length; ++i) {
+
         let diagnostic = toDiagnostic(alerts[i], this.stylesPath);
+
         let key = `${diagnostic.message}-${diagnostic.range}`;
         this.alertMap[key] = alerts[i];
+
         diagnostics.push(diagnostic);
       }
     }
@@ -266,19 +359,19 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection();
 
-    let server: string = getWithDefault('serverURL', 'http://localhost:7777');
 
     this.useCLI = vscode.workspace.getConfiguration('vale-server').get('useCLI', false);
+    if (!this.useCLI) {
+      let server: string = getWithDefault('serverURL', 'http://localhost:7777');
+
     await request.get({uri: server + '/path', json: true})
         .catch((error) => {
-          if (!this.useCLI) {
             throw new Error(`Vale Server could not connect: ${error}.`);
-          }
         })
         .then((body) => {
           this.stylesPath = body.path;
         });
-
+      }
     vscode.workspace.onDidOpenTextDocument(this.doVale, this, subscriptions);
     vscode.workspace.onDidCloseTextDocument((textDocument) => {
       this.diagnosticCollection.delete(textDocument.uri);
