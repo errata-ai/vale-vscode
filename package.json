@@ -33,7 +33,7 @@
 			"properties": {
 				"vale-server.useCLI": {
 					"type": "boolean",
-					"default": true,
+					"default": false,
 					"description": "Use Vale's CLI instead of Vale Server."
 				},
 				"vale-server.path": {
