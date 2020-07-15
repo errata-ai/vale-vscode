@@ -230,8 +230,19 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   private async runVale (file: vscode.TextDocument) {
     const binaryLocation = readBinaryLocation();
     const configLocation = readFileLocation()!;
-    // TODO: Hmm
-    this.stylesPath = "/Users/chrisward/Workspace/TesttheDocs";
+
+    const stylesPath: ReadonlyArray<string> = [
+      binaryLocation,
+      "--no-exit",
+      "--config",
+      configLocation,
+      "ls-config"
+  ];
+  console.info("Run vale as", stylesPath);
+  var configOut = await runInWorkspace(undefined, stylesPath);
+  const configCLI = JSON.parse(configOut);
+
+    this.stylesPath = configCLI.StylesPath;
 
     const command: ReadonlyArray<string> = [
         binaryLocation,
