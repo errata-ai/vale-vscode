@@ -1,16 +1,25 @@
-# Vale Server for VS Code
+# Vale Extension for VS Code
 
-> The official Visual Studio Code extension for [Vale Server](https://errata.ai/vale-server/).
+> The official Visual Studio Code extension for [Vale](https://errata.ai/vale) and [Vale Server](https://errata.ai/vale-server/).
 
-The Vale Server extension provides customizable spelling, style, and grammar checking for English text.
+The Vale extension provides customizable spelling, style, and grammar checking for English text.
 
 ## Installation
 
-To get started,
+You can use this extension with Vale CLI, Vale server, or both.
 
-1. Install [Vale Server](https://errata.ai/vale-server/);
-2. install `vale-server` via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server); and
-3. restart VS Code (if necessary).
+To get started with Vale CLI:
+
+1. Install [Vale CLI](https://errata.ai/vale)
+2. Install and configure styles
+
+To get started with Vale Server:
+
+1. Install [Vale Server](https://errata.ai/vale-server/)
+
+1. Install `vale-vscode` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-vscode); and
+2. restart VS Code (if necessary)
+3. Toggle using Vale CLI or Server from _Preferences > Extensions > Vale > Use CLI_
 
 ## Features
 
@@ -59,34 +68,37 @@ To get started,
     </tr>
 </table>
 
+## Usage
+
+Vale for VSCode automatically checks a document when you open or save it.  Use the `Vale: Lint workspace` command to check a file manually.
+
+This extension supports the following file extensions by default, but you can change them with the `vscode-vale.fileExtensions` config item (see below):
+
+-   **Asciidoc**: _.adoc_ and _.asciidoc_
+-   **Markdown**: _.md_ and _.markdown_
+-   **reStructuredText**: _.rst_
+-   **LaTeX**: _.tex_
+-   **plain text**: _.txt_
+
 ## Settings
 
-The following settings are currently available:
+The following settings are available:
 
-```json
-{
-   "properties":{
-      "vale-server.serverURL":{
-         "type":"string",
-         "default":"http://localhost:7777",
-         "description":"URL to your running Vale Server instance."
-      },
-      "vale-server.extensions":{
-         "type":[
-            "string",
-            "array"
-         ],
-         "items":{
-            "type":"string"
-         },
-         "default":[
-            ".md",
-            ".rst",
-            ".adoc",
-            ".txt"
-         ],
-         "description":"File extensions to lint."
-      }
-   }
-}
-```
+- `vale-vscode.useCLI`: (default `false`). Use Vale CLI instead of Vale Server.
+-   `vscode-vale.configPath`: Absolute path to Vale config file when using CLI. If not specified, uses normal Vale config scoping rules.
+-   `vscode-vale.path`: (default `vale`). Absolute path to the `vale` binary when using CLI, useful if you don't want to use the global binary.
+
+    **Example**
+
+    ```js
+    {
+    // You can use ${workspaceFolder} it will be replaced by workspace folder path
+    "vscode-vale.path": "${workspaceFolder}/node_modules/.bin/vale"
+
+    // or use some absolute path
+    "vscode-vale.path": "/some/path/to/vale"
+    }
+    ```
+
+- `vscode-vale.serverURL`: (default `http://localhost:7777`). URL to running Vale Server instance.
+- `vscode-vale.extensions`: (default `".md", ".rst", ".adoc", ".txt"`). File extensions to lint. Note, these also need to be in your Vale config file if you are using Vale CLI.

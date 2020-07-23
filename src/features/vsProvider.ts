@@ -12,11 +12,11 @@ import {
   workspace,
   WorkspaceFolder,
 } from "vscode";
-// Consolidate
+
 /**
  * A severity from Vale Server.
  */
-type ValeSeverity = 'suggestion'|'warning'|'error';
+type ValeSeverity = 'suggestion' | 'warning' | 'error';
 
 /**
  * An Action From Vale.
@@ -24,14 +24,6 @@ type ValeSeverity = 'suggestion'|'warning'|'error';
 interface IValeActionJSON {
   readonly Name: string;
   readonly Params: [string];
-}
-
-// Really needed?
-/**
- * The type of Vale’s JSON output.
- */
-interface IValeJSON {
-  readonly [propName: string]: ReadonlyArray<IValeErrorJSON>;
 }
 
 /**
@@ -51,7 +43,7 @@ interface IValeErrorJSON {
 
 const readBinaryLocation = () => {
   const configuration = workspace.getConfiguration();
-  const customBinaryPath = configuration.get<string>("vale-server.path");
+  const customBinaryPath = configuration.get<string>("vale-vscode.path");
   if (customBinaryPath) {
     return path.normalize(customBinaryPath);
   }
@@ -61,7 +53,7 @@ const readBinaryLocation = () => {
 
 const readFileLocation = () => {
   const configuration = workspace.getConfiguration();
-  const customConfigPath = configuration.get<string>("vale-server.configPath");
+  const customConfigPath = configuration.get<string>("vale-vscode.configPath");
 
   // Assume that the binary is installed globally
   return customConfigPath;
@@ -104,10 +96,10 @@ const toTitle = (alert: IValeErrorJSON, suggestion: string): string => {
  */
 const toDiagnostic = (alert: IValeErrorJSON, styles: string): vscode.Diagnostic => {
   const range = new vscode.Range(
-      alert.Line - 1, alert.Span[0] - 1, alert.Line - 1, alert.Span[1]);
+    alert.Line - 1, alert.Span[0] - 1, alert.Line - 1, alert.Span[1]);
 
   const diagnostic =
-      new vscode.Diagnostic(range, alert.Message, toSeverity(alert.Severity));
+    new vscode.Diagnostic(range, alert.Message, toSeverity(alert.Severity));
 
   diagnostic.source = 'Vale';
   diagnostic.code = alert.Check;
@@ -117,7 +109,7 @@ const toDiagnostic = (alert: IValeErrorJSON, styles: string): vscode.Diagnostic 
 
   if (fs.existsSync(rule.fsPath)) {
     diagnostic.relatedInformation = [new vscode.DiagnosticRelatedInformation(
-        new vscode.Location(rule, new vscode.Position(0, 0)), 'View rule')];
+      new vscode.Location(rule, new vscode.Position(0, 0)), 'View rule')];
   }
   return diagnostic;
 };
@@ -129,9 +121,9 @@ const toDiagnostic = (alert: IValeErrorJSON, styles: string): vscode.Diagnostic 
  * @param fallback The default value
  */
 const getWithDefault = (setting: string, fallback: string): string => {
-  return vscode.workspace.getConfiguration('vale-server')
-      .get(setting, fallback)
-      .replace(/\/+$/, '');
+  return vscode.workspace.getConfiguration('vale-vscode')
+    .get(setting, fallback)
+    .replace(/\/+$/, '');
 };
 
 /**
@@ -149,23 +141,23 @@ const runInWorkspace = (
   command: ReadonlyArray<string>,
 ): Promise<string> =>
   new Promise((resolve, reject) => {
-      const cwd = folder ? folder.uri.fsPath : process.cwd();
-      const maxBuffer = 10 * 1024 * 1024; // 10MB buffer for large results
-      execFile(
-          command[0],
-          command.slice(1),
-          { cwd, maxBuffer },
-          (error, stdout) => {
-              if (error) {
-                  // Throw system errors, but do not fail if the command
-                  // fails with a non-zero exit code.
-                  console.error("Command error", command, error);
-                  reject(error);
-              } else {
-                  resolve(stdout);
-              }
-          },
-      );
+    const cwd = folder ? folder.uri.fsPath : process.cwd();
+    const maxBuffer = 10 * 1024 * 1024; // 10MB buffer for large results
+    execFile(
+      command[0],
+      command.slice(1),
+      { cwd, maxBuffer },
+      (error, stdout) => {
+        if (error) {
+          // Throw system errors, but do not fail if the command
+          // fails with a non-zero exit code.
+          console.error("Command error", command, error);
+          reject(error);
+        } else {
+          resolve(stdout);
+        }
+      },
+    );
   });
 
 export default class ValeServerProvider implements vscode.CodeActionProvider {
@@ -181,9 +173,9 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   private async doVale(textDocument: vscode.TextDocument) {
     const ext = path.extname(textDocument.fileName);
     const supported =
-        vscode.workspace.getConfiguration('vale-server').get('extensions', [
-          '.md', '.rst', '.adoc', '.txt'
-        ]);
+      vscode.workspace.getConfiguration('vale-vscode').get('extensions', [
+        '.md', '.rst', '.adoc', '.txt'
+      ]);
 
     if (supported.indexOf(ext) < 0) {
       return;
@@ -200,34 +192,35 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       // We're using Vale Server ...
       let server: string = getWithDefault('serverURL', 'http://127.0.0.1:7777');
       request
-          .post({
-            uri: server + '/file',
-            qs: {
-              file: textDocument.fileName,
-              path: path.dirname(textDocument.fileName)
-            },
-            json: true
-          })
-          .catch((error) => {
-            vscode.window.showErrorMessage(
-                `Vale Server could not connect: ${error}.`);
-          })
-          .then((body) => {
-            let contents = fs.readFileSync(body.path);
-            this.handleJSON(contents.toString(), textDocument);
-          });
-      } else {
-        // We're using the CLI ...
-        try {
-          const result = await this.runVale(textDocument);
+        .post({
+          uri: server + '/file',
+          qs: {
+            file: textDocument.fileName,
+            path: path.dirname(textDocument.fileName)
+          },
+          json: true
+        })
+        .catch((error) => {
+          vscode.window.showErrorMessage(
+            `Vale Server could not connect: ${error}.`);
+        })
+        .then((body) => {
+          let contents = fs.readFileSync(body.path);
+          this.handleJSON(contents.toString(), textDocument);
+        });
+    } else {
+      // We're using the CLI ...
+      try {
+        const result = await this.runVale(textDocument);
       } catch (error) {
-        // TODO: Error handling
+        vscode.window.showErrorMessage(
+          `There was an error running Vale ${error}.`
+        );
       }
-
-      }
+    }
   }
 
-  private async runVale (file: vscode.TextDocument) {
+  private async runVale(file: vscode.TextDocument) {
     const binaryLocation = readBinaryLocation();
     const configLocation = readFileLocation()!;
 
@@ -237,26 +230,25 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       "--config",
       configLocation,
       "ls-config"
-  ];
-  console.info("Run vale as", stylesPath);
-  var configOut = await runInWorkspace(undefined, stylesPath);
-  const configCLI = JSON.parse(configOut);
-
+    ];
+    // console.info("Run vale as", stylesPath);
+    var configOut = await runInWorkspace(undefined, stylesPath);
+    const configCLI = JSON.parse(configOut);
     this.stylesPath = configCLI.StylesPath;
 
     const command: ReadonlyArray<string> = [
-        binaryLocation,
-        "--no-exit",
-        "--config",
-        configLocation,
-        "--output",
-        "JSON",
-        file.fileName,
+      binaryLocation,
+      "--no-exit",
+      "--config",
+      configLocation,
+      "--output",
+      "JSON",
+      file.fileName,
     ];
-    console.info("Run vale as", command);
+    // console.info("Run vale as", command);
     const stdout = await runInWorkspace(undefined, command);
     this.handleJSON(stdout.toString(), file);
-}
+  }
 
   private handleJSON(contents: string, textDocument: vscode.TextDocument) {
     const diagnostics: vscode.Diagnostic[] = [];
@@ -280,9 +272,9 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   }
 
   public async provideCodeActions(
-      document: vscode.TextDocument, range: vscode.Range,
-      context: vscode.CodeActionContext,
-      token: vscode.CancellationToken): Promise<vscode.CodeAction[]> {
+    document: vscode.TextDocument, range: vscode.Range,
+    context: vscode.CodeActionContext,
+    token: vscode.CancellationToken): Promise<vscode.CodeAction[]> {
     let diagnostic: vscode.Diagnostic = context.diagnostics[0];
     let actions: vscode.CodeAction[] = [];
 
@@ -295,45 +287,45 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
     let server: string = getWithDefault('serverURL', 'http://localhost:7777');
     await request
-        .post({
-          uri: server + '/suggest',
-          qs: {alert: JSON.stringify(alert)},
-          json: true
-        })
-        .catch((error) => {
-          return Promise.reject(`Vale Server could not connect: ${error}.`);
-        })
-        .then((body) => {
-          for (let idx in body['suggestions']) {
-            const suggestion = body['suggestions'][idx];
-            const title = toTitle(alert, suggestion);
-            const action =
-                new vscode.CodeAction(title, vscode.CodeActionKind.QuickFix);
+      .post({
+        uri: server + '/suggest',
+        qs: { alert: JSON.stringify(alert) },
+        json: true
+      })
+      .catch((error) => {
+        return Promise.reject(`Vale Server could not connect: ${error}.`);
+      })
+      .then((body) => {
+        for (let idx in body['suggestions']) {
+          const suggestion = body['suggestions'][idx];
+          const title = toTitle(alert, suggestion);
+          const action =
+            new vscode.CodeAction(title, vscode.CodeActionKind.QuickFix);
 
-            action.command = {
-              title: title,
-              command: ValeServerProvider.commandId,
-              arguments: [
-                document, diagnostic, alert.Match, suggestion, alert.Action.Name
-              ]
-            };
+          action.command = {
+            title: title,
+            command: ValeServerProvider.commandId,
+            arguments: [
+              document, diagnostic, alert.Match, suggestion, alert.Action.Name
+            ]
+          };
 
-            actions.push(action);
-          }
-        });
+          actions.push(action);
+        }
+      });
 
     return actions;
   }
 
   private runCodeAction(
-      document: vscode.TextDocument, diagnostic: vscode.Diagnostic,
-      error: string, suggestion: string, action: string): any {
+    document: vscode.TextDocument, diagnostic: vscode.Diagnostic,
+    error: string, suggestion: string, action: string): any {
     let docError: string = document.getText(diagnostic.range);
 
     if (error === docError) {
       // Remove diagnostic from list
       let diagnostics: vscode.Diagnostic[] =
-          this.diagnosticMap[document.uri.toString()];
+        this.diagnosticMap[document.uri.toString()];
       let index: number = diagnostics.indexOf(diagnostic);
 
       diagnostics.splice(index, 1);
@@ -347,42 +339,41 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       if (action !== 'remove') {
         edit.replace(document.uri, diagnostic.range, suggestion);
       } else {
-        // NOTE: we need to add a character when deletint to avoid leaving a
+        // NOTE: we need to add a character when deleting to avoid leaving a
         // double space.
         const range = new vscode.Range(
-            diagnostic.range.start.line, diagnostic.range.start.character,
-            diagnostic.range.end.line, diagnostic.range.end.character + 1);
+          diagnostic.range.start.line, diagnostic.range.start.character,
+          diagnostic.range.end.line, diagnostic.range.end.character + 1);
         edit.delete(document.uri, range);
       }
 
       return vscode.workspace.applyEdit(edit);
     } else {
       vscode.window.showErrorMessage(
-          'The suggestion was not applied because it is out of date.');
+        'The suggestion was not applied because it is out of date.');
       console.log(error, docError);
     }
   }
 
   public async activate(subscriptions: vscode.Disposable[]) {
     this.command = vscode.commands.registerCommand(
-        ValeServerProvider.commandId, this.runCodeAction, this);
+      ValeServerProvider.commandId, this.runCodeAction, this);
     subscriptions.push(this);
 
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection();
 
-
-    this.useCLI = vscode.workspace.getConfiguration('vale-server').get('useCLI', false);
+    this.useCLI = vscode.workspace.getConfiguration('vale-vscode').get('useCLI', false);
     if (!this.useCLI) {
       let server: string = getWithDefault('serverURL', 'http://localhost:7777');
 
-    await request.get({uri: server + '/path', json: true})
+      await request.get({ uri: server + '/path', json: true })
         .catch((error) => {
-            throw new Error(`Vale Server could not connect: ${error}.`);
+          throw new Error(`Vale Server could not connect: ${error}.`);
         })
         .then((body) => {
           this.stylesPath = body.path;
         });
-      }
+    }
     vscode.workspace.onDidOpenTextDocument(this.doVale, this, subscriptions);
     vscode.workspace.onDidCloseTextDocument((textDocument) => {
       this.diagnosticCollection.delete(textDocument.uri);

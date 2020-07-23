@@ -1,6 +1,6 @@
 {
-	"name": "vale-server",
-	"displayName": "Vale Server",
+	"name": "vale-vscode",
+	"displayName": "Vale VSCode",
 	"icon": ".vscode/icon.png",
 	"description": "The official Visual Studio Code extension for Vale and Vale Server.",
 	"bugs": "https://github.com/errata-ai/vale-vscode/issues",
@@ -15,7 +15,7 @@
 		"type": "git",
 		"url": "https://github.com/errata-ai/vale-vscode.git"
 	},
-	"version": "0.9.0",
+	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.36.0"
 	},
@@ -29,49 +29,49 @@
 	"contributes": {
 		"configuration": {
 			"type": "object",
-			"title": "Vale Server Configuration",
+			"title": "Vale",
 			"properties": {
-				"vale-server.useCLI": {
+				"vale-vscode.useCLI": {
 					"type": "boolean",
 					"default": false,
 					"description": "Use Vale's CLI instead of Vale Server."
 				},
-				"vale-server.path": {
-                    "scope": "resource",
-                    "type": "string",
-                    "default": "vale",
-                    "description": "Absolute path to Vale binary. Special var ${workspaceFolder} can be used in path (NOTE: in windows you can use '/' and can omit '.cmd' in path)"
-                },
-				"vale-server.serverURL": {
-					"type": "string",
-					"default": "http://127.0.0.1:7777",
-					"description": "URL to your running Vale Server instance."
-				},
-				"vale-server.configPath": {
+				"vale-vscode.configPath": {
 					"scope": "resource",
 					"type": "string",
 					"default": null,
-					"description": "Absolute path to Vale config file. If not specified, uses normal Vale config scoping rules"
+					"description": "Absolute path to Vale config file when using CLI. If not specified, uses normal Vale config scoping rules"
 				},
-				"vale-server.extensions": {
-					"type": [
-						"string",
-						"array"
-					],
-					"items": {
-						"type": "string"
-					},
-					"default": [
-						".md",
-						".markdown",
-						".rst",
-						".adoc",
-						".asciidoc",
-						".txt",
-						".tex"
-					],
-					"description": "File extensions to lint."
+				"vale-vscode.path": {
+					"scope": "resource",
+					"type": "string",
+					"default": "vale",
+					"description": "Absolute path to Vale binary when using CLI. Special var ${workspaceFolder} can be used in path (NOTE: in windows you can use '/' and can omit '.cmd' in path)"
+				},
+				"vale-vscode.serverURL": {
+					"type": "string",
+					"default": "http://127.0.0.1:7777",
+					"description": "URL to your running Vale Server instance."
 				}
+			},
+			"vale-vscode.extensions": {
+				"type": [
+					"string",
+					"array"
+				],
+				"items": {
+					"type": "string"
+				},
+				"default": [
+					".md",
+					".markdown",
+					".rst",
+					".adoc",
+					".asciidoc",
+					".txt",
+					".tex"
+				],
+				"description": "File extensions to lint."
 			}
 		}
 	},
