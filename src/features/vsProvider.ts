@@ -43,7 +43,7 @@ interface IValeErrorJSON {
 
 const readBinaryLocation = () => {
   const configuration = workspace.getConfiguration();
-  const customBinaryPath = configuration.get<string>("vale-vscode.path");
+  const customBinaryPath = configuration.get<string>("vale-server.path");
   if (customBinaryPath) {
     return path.normalize(customBinaryPath);
   }
@@ -53,7 +53,7 @@ const readBinaryLocation = () => {
 
 const readFileLocation = () => {
   const configuration = workspace.getConfiguration();
-  const customConfigPath = configuration.get<string>("vale-vscode.configPath");
+  const customConfigPath = configuration.get<string>("vale-server.configPath");
 
   // Assume that the binary is installed globally
   return customConfigPath;
@@ -121,7 +121,7 @@ const toDiagnostic = (alert: IValeErrorJSON, styles: string): vscode.Diagnostic 
  * @param fallback The default value
  */
 const getWithDefault = (setting: string, fallback: string): string => {
-  return vscode.workspace.getConfiguration('vale-vscode')
+  return vscode.workspace.getConfiguration('vale-server')
     .get(setting, fallback)
     .replace(/\/+$/, '');
 };
@@ -173,7 +173,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   private async doVale(textDocument: vscode.TextDocument) {
     const ext = path.extname(textDocument.fileName);
     const supported =
-      vscode.workspace.getConfiguration('vale-vscode').get('extensions', [
+      vscode.workspace.getConfiguration('vale-server').get('extensions', [
         '.md', '.rst', '.adoc', '.txt'
       ]);
 
@@ -362,7 +362,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection();
 
-    this.useCLI = vscode.workspace.getConfiguration('vale-vscode').get('useCLI', false);
+    this.useCLI = vscode.workspace.getConfiguration('vale-server').get('useCLI', false);
     if (!this.useCLI) {
       let server: string = getWithDefault('serverURL', 'http://localhost:7777');
 

@@ -1,9 +1,9 @@
 {
-	"name": "vale-vscode",
-	"displayName": "Vale VSCode",
+	"name": "vale-server",
+	"displayName": "Vale extension for VSCode",
 	"icon": ".vscode/icon.png",
 	"description": "The official Visual Studio Code extension for Vale and Vale Server.",
-	"bugs": "https://github.com/errata-ai/vale-vscode/issues",
+	"bugs": "https://github.com/errata-ai/vale-server/issues",
 	"author": {
 		"name": "Joseph Kato",
 		"email": "support@errata.ai",
@@ -13,7 +13,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/errata-ai/vale-vscode.git"
+		"url": "https://github.com/errata-ai/vale-server.git"
 	},
 	"version": "1.0.0",
 	"engines": {
@@ -31,30 +31,30 @@
 			"type": "object",
 			"title": "Vale",
 			"properties": {
-				"vale-vscode.useCLI": {
+				"vale-server.useCLI": {
 					"type": "boolean",
 					"default": false,
 					"description": "Use Vale's CLI instead of Vale Server."
 				},
-				"vale-vscode.configPath": {
+				"vale-server.configPath": {
 					"scope": "resource",
 					"type": "string",
 					"default": null,
 					"description": "Absolute path to Vale config file when using CLI. If not specified, uses normal Vale config scoping rules"
 				},
-				"vale-vscode.path": {
+				"vale-server.path": {
 					"scope": "resource",
 					"type": "string",
 					"default": "vale",
 					"description": "Absolute path to Vale binary when using CLI. Special var ${workspaceFolder} can be used in path (NOTE: in windows you can use '/' and can omit '.cmd' in path)"
 				},
-				"vale-vscode.serverURL": {
+				"vale-server.serverURL": {
 					"type": "string",
 					"default": "http://127.0.0.1:7777",
 					"description": "URL to your running Vale Server instance."
 				}
 			},
-			"vale-vscode.extensions": {
+			"vale-server.extensions": {
 				"type": [
 					"string",
 					"array"
