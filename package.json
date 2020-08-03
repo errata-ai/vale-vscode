@@ -1,9 +1,9 @@
 {
 	"name": "vale-server",
-	"displayName": "Vale Server",
+	"displayName": "Vale extension for VSCode",
 	"icon": ".vscode/icon.png",
 	"description": "The official Visual Studio Code extension for Vale and Vale Server.",
-	"bugs": "https://github.com/errata-ai/vale-vscode/issues",
+	"bugs": "https://github.com/errata-ai/vale-server/issues",
 	"author": {
 		"name": "Joseph Kato",
 		"email": "support@errata.ai",
@@ -13,9 +13,9 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/errata-ai/vale-vscode.git"
+		"url": "https://github.com/errata-ai/vale-server.git"
 	},
-	"version": "0.9.0",
+	"version": "1.0.0",
 	"engines": {
 		"vscode": "^1.36.0"
 	},
@@ -29,34 +29,49 @@
 	"contributes": {
 		"configuration": {
 			"type": "object",
-			"title": "Vale Server Configuration",
+			"title": "Vale",
 			"properties": {
 				"vale-server.useCLI": {
 					"type": "boolean",
 					"default": false,
 					"description": "Use Vale's CLI instead of Vale Server."
 				},
+				"vale-server.configPath": {
+					"scope": "resource",
+					"type": "string",
+					"default": null,
+					"description": "Absolute path to Vale config file when using CLI. If not specified, uses normal Vale config scoping rules"
+				},
+				"vale-server.path": {
+					"scope": "resource",
+					"type": "string",
+					"default": "vale",
+					"description": "Absolute path to Vale binary when using CLI. Special var ${workspaceFolder} can be used in path (NOTE: in windows you can use '/' and can omit '.cmd' in path)"
+				},
 				"vale-server.serverURL": {
 					"type": "string",
 					"default": "http://127.0.0.1:7777",
 					"description": "URL to your running Vale Server instance."
-				},
-				"vale-server.extensions": {
-					"type": [
-						"string",
-						"array"
-					],
-					"items": {
-						"type": "string"
-					},
-					"default": [
-						".md",
-						".rst",
-						".adoc",
-						".txt"
-					],
-					"description": "File extensions to lint."
 				}
+			},
+			"vale-server.extensions": {
+				"type": [
+					"string",
+					"array"
+				],
+				"items": {
+					"type": "string"
+				},
+				"default": [
+					".md",
+					".markdown",
+					".rst",
+					".adoc",
+					".asciidoc",
+					".txt",
+					".tex"
+				],
+				"description": "File extensions to lint."
 			}
 		}
 	},
@@ -75,6 +90,7 @@
 		"@types/mocha": "^5.2.6",
 		"@types/node": "^10.12.21",
 		"@types/vscode": "^1.36.0",
+		"@types/which": "^1.3",
 		"glob": "^7.1.4",
 		"mocha": "^6.1.4",
 		"ts-loader": "^6.1.2",
@@ -88,6 +104,7 @@
 		"@types/request-promise-native": "^1.0.16",
 		"fs": "0.0.1-security",
 		"request": "^2.88.0",
-		"request-promise-native": "^1.0.7"
+		"request-promise-native": "^1.0.7",
+		"which": "^2.0.1"
 	}
 }
