@@ -94,14 +94,18 @@ const toTitle = (alert: IValeErrorJSON, suggestion: string): string => {
  *
  * @param alert The alert to convert
  */
-const toDiagnostic = (alert: IValeErrorJSON, styles: string): vscode.Diagnostic => {
+const toDiagnostic = (
+  alert: IValeErrorJSON,
+  styles: string,
+  backend: string
+): vscode.Diagnostic => {
   const range = new vscode.Range(
     alert.Line - 1, alert.Span[0] - 1, alert.Line - 1, alert.Span[1]);
 
   const diagnostic =
     new vscode.Diagnostic(range, alert.Message, toSeverity(alert.Severity));
 
-  diagnostic.source = 'Vale';
+  diagnostic.source = backend;
   diagnostic.code = alert.Check;
 
   const name = alert.Check.split('.');
@@ -254,11 +258,12 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     const diagnostics: vscode.Diagnostic[] = [];
     let body = JSON.parse(contents.toString());
 
+    const backend = this.useCLI ? "Vale" : "Vale Server";
     for (let key in body) {
       const alerts = body[key];
       for (var i = 0; i < alerts.length; ++i) {
 
-        let diagnostic = toDiagnostic(alerts[i], this.stylesPath);
+        let diagnostic = toDiagnostic(alerts[i], this.stylesPath, backend);
 
         let key = `${diagnostic.message}-${diagnostic.range}`;
         this.alertMap[key] = alerts[i];
