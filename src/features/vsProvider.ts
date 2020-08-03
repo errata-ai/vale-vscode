@@ -278,7 +278,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     let diagnostic: vscode.Diagnostic = context.diagnostics[0];
     let actions: vscode.CodeAction[] = [];
 
-    if (diagnostic === undefined) {
+    if (diagnostic === undefined || this.useCLI) {
       return actions;
     }
 
