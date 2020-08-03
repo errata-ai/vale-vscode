@@ -1,6 +1,6 @@
 {
 	"name": "vale-server",
-	"displayName": "Vale extension for VSCode",
+	"displayName": "Vale",
 	"icon": ".vscode/icon.png",
 	"description": "The official Visual Studio Code extension for Vale and Vale Server.",
 	"bugs": "https://github.com/errata-ai/vale-vscode/issues",
@@ -31,47 +31,80 @@
 			"type": "object",
 			"title": "Vale",
 			"properties": {
-				"vale-server.useCLI": {
+				"vale.core.extensions": {
+					"type": "array",
+					"items": {
+						"type": "string"
+					},
+					"default": [
+						".md",
+						".markdown",
+						".rst",
+						".adoc",
+						".asciidoc",
+						".txt"
+					],
+					"markdownDescription": "Specifies what file extensions to lint. See the [documentation](https://docs.errata.ai/vale-server/concepts/scoping#formats) for more information on the supported file formats. (**NOTE**: When adding a new extension, make sure you've also added it to your `.vale.ini` configuration file.)"
+				},
+				"vale.core.useCLI": {
 					"type": "boolean",
 					"default": false,
-					"description": "Use Vale's CLI instead of Vale Server."
+					"markdownDescription": "Use Vale's CLI instead of Vale Server. (**NOTE**: Some features, such as [Quick Fixes](https://github.com/errata-ai/vale-vscode/pull/4) and [Vocab Management](https://github.com/errata-ai/vale-vscode/pull/4), are only available when using Vale Server.)"
 				},
-				"vale-server.configPath": {
-					"scope": "resource",
-					"type": "string",
-					"default": null,
-					"description": "Absolute path to Vale config file when using CLI. If not specified, uses normal Vale config scoping rules"
-				},
-				"vale-server.path": {
-					"scope": "resource",
-					"type": "string",
-					"default": "vale",
-					"description": "Absolute path to Vale binary when using CLI. Special var ${workspaceFolder} can be used in path (NOTE: in windows you can use '/' and can omit '.cmd' in path)"
-				},
-				"vale-server.serverURL": {
+
+				"vale.server.serverURL": {
 					"type": "string",
 					"default": "http://127.0.0.1:7777",
 					"description": "URL to your running Vale Server instance."
-				}
-			},
-			"vale-server.extensions": {
-				"type": [
-					"string",
-					"array"
-				],
-				"items": {
-					"type": "string"
 				},
-				"default": [
-					".md",
-					".markdown",
-					".rst",
-					".adoc",
-					".asciidoc",
-					".txt",
-					".tex"
-				],
-				"description": "File extensions to lint."
+				"vale.server.provideFixes": {
+					"type": "boolean",
+					"default": true,
+					"description": "Offer solutions to alerts using the 'Quick Fix' button."
+				},
+
+				"vale.valeCLI.config": {
+					"scope": "resource",
+					"type": "string",
+					"default": null,
+					"description": "Absolute path to a Vale config file. If not specified, the default search process will be used (relative to the current file)."
+				},
+				"vale.valeCLI.path": {
+					"scope": "resource",
+					"type": "string",
+					"default": "vale",
+					"markdownDescription": "Absolute path to the Vale binary. The predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable can be used to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)"
+				},
+
+
+				"vale-server.serverURL": {
+					"type": "string",
+					"default": "http://127.0.0.1:7777",
+					"description": "URL to your running Vale Server instance.",
+					"markdownDeprecationMessage": "**Deprecated**: Please use `#vale.server.serverURL#` instead.",
+					"deprecationMessage": "Deprecated: Please use vale.server.serverURL instead."
+				},
+				"vale-server.extensions": {
+					"type": [
+						"string",
+						"array"
+					],
+					"items": {
+						"type": "string"
+					},
+					"default": [
+						".md",
+						".markdown",
+						".rst",
+						".adoc",
+						".asciidoc",
+						".txt",
+						".tex"
+					],
+					"description": "File extensions to lint.",
+					"markdownDeprecationMessage": "**Deprecated**: Please use `#vale.core.extensions#` instead.",
+					"deprecationMessage": "Deprecated: Please use vale.core.extensions instead."
+				}
 			}
 		}
 	},

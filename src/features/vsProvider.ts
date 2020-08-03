@@ -43,7 +43,7 @@ interface IValeErrorJSON {
 
 const readBinaryLocation = () => {
   const configuration = workspace.getConfiguration();
-  const customBinaryPath = configuration.get<string>("vale-server.path");
+  const customBinaryPath = configuration.get<string>("vale.valeCLI.path");
   if (customBinaryPath) {
     return path.normalize(customBinaryPath);
   }
@@ -53,7 +53,7 @@ const readBinaryLocation = () => {
 
 const readFileLocation = () => {
   const configuration = workspace.getConfiguration();
-  const customConfigPath = configuration.get<string>("vale-server.configPath");
+  const customConfigPath = configuration.get<string>("vale.valeCLI.config");
 
   // Assume that the binary is installed globally
   return customConfigPath;
@@ -119,18 +119,6 @@ const toDiagnostic = (
 };
 
 /**
- * Get the given setting from the user's config.
- *
- * @param setting The name of the setting
- * @param fallback The default value
- */
-const getWithDefault = (setting: string, fallback: string): string => {
-  return vscode.workspace.getConfiguration('vale-server')
-    .get(setting, fallback)
-    .replace(/\/+$/, '');
-};
-
-/**
  * Run a command in a given workspace folder and get its standard output.
  *
  * If the workspace folder is undefined run the command in the working directory
@@ -176,14 +164,14 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
   private async doVale(textDocument: vscode.TextDocument) {
     const ext = path.extname(textDocument.fileName);
-    const supported =
-      vscode.workspace.getConfiguration('vale-server').get('extensions', [
-        '.md', '.rst', '.adoc', '.txt'
-      ]);
 
+    let supported = vscode.workspace.getConfiguration('vale.core').get('extensions', [
+      '.md', '.rst', '.adoc', '.txt'
+    ]);
     if (supported.indexOf(ext) < 0) {
       return;
     }
+
     // Reset out alert map:
     this.alertMap = {};
 
@@ -194,7 +182,11 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
     if (!this.useCLI) {
       // We're using Vale Server ...
-      let server: string = getWithDefault('serverURL', 'http://127.0.0.1:7777');
+      let server: string = workspace.getConfiguration().get(
+        'vale.server.serverURL',
+        'http://localhost:7777'
+      );
+
       request
         .post({
           uri: server + '/file',
@@ -235,7 +227,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       configLocation,
       "ls-config"
     ];
-    // console.info("Run vale as", stylesPath);
+
     var configOut = await runInWorkspace(undefined, stylesPath);
     const configCLI = JSON.parse(configOut);
     this.stylesPath = configCLI.StylesPath;
@@ -249,7 +241,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       "JSON",
       file.fileName,
     ];
-    // console.info("Run vale as", command);
+
     const stdout = await runInWorkspace(undefined, command);
     this.handleJSON(stdout.toString(), file);
   }
@@ -277,7 +269,8 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   }
 
   public async provideCodeActions(
-    document: vscode.TextDocument, range: vscode.Range,
+    document: vscode.TextDocument,
+    range: vscode.Range,
     context: vscode.CodeActionContext,
     token: vscode.CancellationToken): Promise<vscode.CodeAction[]> {
     let diagnostic: vscode.Diagnostic = context.diagnostics[0];
@@ -290,7 +283,11 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     let key = `${diagnostic.message}-${diagnostic.range}`;
     let alert = this.alertMap[key];
 
-    let server: string = getWithDefault('serverURL', 'http://localhost:7777');
+    let server: string = workspace.getConfiguration().get(
+      'vale.server.serverURL',
+      'http://localhost:7777'
+    );
+
     await request
       .post({
         uri: server + '/suggest',
@@ -361,15 +358,22 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   }
 
   public async activate(subscriptions: vscode.Disposable[]) {
-    this.command = vscode.commands.registerCommand(
-      ValeServerProvider.commandId, this.runCodeAction, this);
-    subscriptions.push(this);
+    const configuration = workspace.getConfiguration();
 
+    this.command = vscode.commands.registerCommand(
+      ValeServerProvider.commandId,
+      this.runCodeAction,
+      this
+    );
+    subscriptions.push(this);
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection();
 
-    this.useCLI = vscode.workspace.getConfiguration('vale-server').get('useCLI', false);
+    this.useCLI = configuration.get('vale.core.useCLI', false);
     if (!this.useCLI) {
-      let server: string = getWithDefault('serverURL', 'http://localhost:7777');
+      let server: string = configuration.get(
+        'vale.server.serverURL',
+        'http://localhost:7777'
+      );
 
       await request.get({ uri: server + '/path', json: true })
         .catch((error) => {
