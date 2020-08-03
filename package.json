@@ -3,7 +3,7 @@
 	"displayName": "Vale extension for VSCode",
 	"icon": ".vscode/icon.png",
 	"description": "The official Visual Studio Code extension for Vale and Vale Server.",
-	"bugs": "https://github.com/errata-ai/vale-server/issues",
+	"bugs": "https://github.com/errata-ai/vale-vscode/issues",
 	"author": {
 		"name": "Joseph Kato",
 		"email": "support@errata.ai",
@@ -13,9 +13,9 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/errata-ai/vale-server.git"
+		"url": "https://github.com/errata-ai/vale-vscode.git"
 	},
-	"version": "1.0.0",
+	"version": "0.10.0",
 	"engines": {
 		"vscode": "^1.36.0"
 	},
