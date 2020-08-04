@@ -244,7 +244,9 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       file.fileName,
     ];
 
-    const stdout = await runInWorkspace(undefined, command);
+    const folder = workspace.getWorkspaceFolder(file.uri);
+    const stdout = await runInWorkspace(folder, command);
+
     this.handleJSON(stdout.toString(), file);
   }
 
