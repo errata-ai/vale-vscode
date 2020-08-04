@@ -13,6 +13,8 @@ import {
   WorkspaceFolder,
 } from "vscode";
 
+import InitCommands from './vsCommands';
+
 /**
  * A severity from Vale Server.
  */
@@ -308,7 +310,11 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
             title: title,
             command: ValeServerProvider.commandId,
             arguments: [
-              document, diagnostic, alert.Match, suggestion, alert.Action.Name
+              document,
+              diagnostic,
+              alert.Match,
+              suggestion,
+              alert.Action.Name
             ]
           };
 
@@ -366,6 +372,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       this
     );
     subscriptions.push(this);
+
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection();
 
     this.useCLI = configuration.get('vale.core.useCLI', false);
@@ -390,6 +397,10 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
     vscode.workspace.onDidSaveTextDocument(this.doVale, this);
     vscode.workspace.textDocuments.forEach(this.doVale, this);
+
+    vscode.languages.registerCodeActionsProvider({ scheme: '*', language: '*' }, this);
+
+    InitCommands(subscriptions);
   }
 
   public dispose(): void {

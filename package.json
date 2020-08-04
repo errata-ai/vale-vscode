@@ -23,10 +23,36 @@
 		"Linters"
 	],
 	"activationEvents": [
-		"onLanguage:plaintext"
+		"onLanguage:plaintext",
+		"onCommand:vale.addToVocab"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
+		"commands": [
+			{
+				"command": "vale.addToVocab",
+				"category": "Vale",
+				"title": "Add word to Vocab"
+			}
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"command": "vale.addToVocab",
+					"category": "Vale",
+					"when": "editorHasSelection",
+					"group": "2_workspace"
+				}
+			],
+			"commandPalette": [
+				{
+					"command": "vale.addToVocab",
+					"category": "Vale",
+					"when": "editorHasSelection",
+					"group": "2_workspace"
+				}
+			]
+		},
 		"configuration": {
 			"type": "object",
 			"title": "Vale",
