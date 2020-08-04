@@ -165,11 +165,13 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   private command!: vscode.Disposable;
 
   private async doVale(textDocument: vscode.TextDocument) {
+    const configuration = workspace.getConfiguration();
     const ext = path.extname(textDocument.fileName);
 
-    let supported = vscode.workspace.getConfiguration('vale.core').get('extensions', [
+    let supported = configuration.get('vale.core.extensions', [
       '.md', '.rst', '.adoc', '.txt'
     ]);
+
     if (supported.indexOf(ext) < 0) {
       return;
     }
@@ -182,6 +184,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       return;
     }
 
+    this.useCLI = configuration.get('vale.core.useCLI', false);
     if (!this.useCLI) {
       // We're using Vale Server ...
       let server: string = workspace.getConfiguration().get(
