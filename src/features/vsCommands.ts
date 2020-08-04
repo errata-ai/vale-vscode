@@ -3,12 +3,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as request from 'request-promise-native';
 
-export default function InitCommands(subscriptions: vscode.Disposable[]) {
-    subscriptions.push(
-        vscode.commands.registerCommand('vale.addToVocab', addToVocab)
-    );
-}
-
 /**
  * An Alert From Vale.
  */
@@ -16,6 +10,30 @@ interface IValeConfigJSON {
     readonly Project: string;
     readonly StylesPath: string;
 }
+
+export default function InitCommands(subscriptions: vscode.Disposable[]) {
+    subscriptions.push(
+        vscode.commands.registerCommand('vale.addToAccept', addToAccept),
+        vscode.commands.registerCommand('vale.addToReject', addToReject),
+
+        vscode.commands.registerCommand('vale.openAccept', openAccept),
+        vscode.commands.registerCommand('vale.openReject', openReject)
+    );
+}
+
+const addToAccept = async () => {
+    await addToVocab("accept");
+};
+const addToReject = async () => {
+    await addToVocab("reject");
+};
+
+const openAccept = async () => {
+    await openVocabFile("accept");
+};
+const openReject = async () => {
+    await openVocabFile("reject");
+};
 
 /**
  * Get the user's active Vale Server configuration.
@@ -34,10 +52,28 @@ const getConfig = async (server: string): Promise<IValeConfigJSON> => {
     return config;
 };
 
+const openVocabFile = async (name: string) => {
+    const configuration = vscode.workspace.getConfiguration();
+    const server: string = configuration.get(
+        'vale.server.serverURL',
+        'http://localhost:7777'
+    );
+    const config: IValeConfigJSON = await getConfig(server);
+
+    const src = path.join(
+        config.StylesPath,
+        'Vocab',
+        config.Project,
+        name + '.txt');
+    vscode.workspace.openTextDocument(src).then(
+        doc => vscode.window.showTextDocument(doc)
+    );
+};
+
 /**
  * Add the currently-selected word to the user's active Vocab.
  */
-const addToVocab = async () => {
+const addToVocab = async (filename: string) => {
     const editor = vscode.window.activeTextEditor;
     if (!editor) {
         return;
@@ -58,7 +94,7 @@ const addToVocab = async () => {
         uri: server + '/vocab',
         qs: {
             name: name,
-            file: 'accept'
+            file: filename
         },
         json: true
     })
@@ -81,14 +117,14 @@ const addToVocab = async () => {
         request.post({
             uri: server + '/update',
             qs: {
-                path: name + '.accept',
+                path: name + '.' + filename,
                 text: body.join('\n')
             },
             json: true
         }).catch((error) => {
             throw new Error(`Vale Server could not connect: ${error}.`);
         }).then(() => {
-            const src = path.join(styles, 'Vocab', name, 'accept.txt');
+            const src = path.join(styles, 'Vocab', name, filename + '.txt');
             vscode.window.showInformationMessage(
                     `Successfully added '${word}' to '${name}' vocab.`,
                     ...['View File']).then(selection => {

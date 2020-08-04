@@ -30,15 +30,36 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "vale.addToVocab",
+				"command": "vale.addToAccept",
 				"category": "Vale",
-				"title": "Add word to Vocab"
+				"title": "Add word to Vocab (accept)"
+			},
+			{
+				"command": "vale.addToReject",
+				"category": "Vale",
+				"title": "Add word to Vocab (reject)"
+			},
+			{
+				"command": "vale.openAccept",
+				"category": "Vale",
+				"title": "Open Vocab File (accept)"
+			},
+			{
+				"command": "vale.openReject",
+				"category": "Vale",
+				"title": "Open Vocab File (reject)"
 			}
 		],
 		"menus": {
 			"editor/context": [
 				{
-					"command": "vale.addToVocab",
+					"command": "vale.addToAccept",
+					"category": "Vale",
+					"when": "editorHasSelection",
+					"group": "2_workspace"
+				},
+				{
+					"command": "vale.addToReject",
 					"category": "Vale",
 					"when": "editorHasSelection",
 					"group": "2_workspace"
@@ -46,10 +67,23 @@
 			],
 			"commandPalette": [
 				{
-					"command": "vale.addToVocab",
+					"command": "vale.openAccept",
+					"category": "Vale"
+				},
+				{
+					"command": "vale.openReject",
+					"category": "Vale"
+				},
+
+				{
+					"command": "vale.addToAccept",
 					"category": "Vale",
-					"when": "editorHasSelection",
-					"group": "2_workspace"
+					"when": "false"
+				},
+				{
+					"command": "vale.addToReject",
+					"category": "Vale",
+					"when": "false"
 				}
 			]
 		},
