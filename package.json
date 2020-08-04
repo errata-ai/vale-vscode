@@ -55,24 +55,26 @@
 				{
 					"command": "vale.addToAccept",
 					"category": "Vale",
-					"when": "editorHasSelection",
+					"when": "editorHasSelection && !config.vale.core.useCLI",
 					"group": "2_workspace"
 				},
 				{
 					"command": "vale.addToReject",
 					"category": "Vale",
-					"when": "editorHasSelection",
+					"when": "editorHasSelection && !config.vale.core.useCLI",
 					"group": "2_workspace"
 				}
 			],
 			"commandPalette": [
 				{
 					"command": "vale.openAccept",
-					"category": "Vale"
+					"category": "Vale",
+					"when": "!config.vale.core.useCLI"
 				},
 				{
 					"command": "vale.openReject",
-					"category": "Vale"
+					"category": "Vale",
+					"when": "!config.vale.core.useCLI"
 				},
 
 				{
@@ -132,7 +134,7 @@
 				"vale.valeCLI.path": {
 					"scope": "resource",
 					"type": "string",
-					"default": "vale",
+					"default": null,
 					"markdownDescription": "Absolute path to the Vale binary. The predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable can be used to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)"
 				},
 
