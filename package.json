@@ -93,21 +93,6 @@
 			"type": "object",
 			"title": "Vale",
 			"properties": {
-				"vale.core.extensions": {
-					"type": "array",
-					"items": {
-						"type": "string"
-					},
-					"default": [
-						".md",
-						".markdown",
-						".rst",
-						".adoc",
-						".asciidoc",
-						".txt"
-					],
-					"markdownDescription": "Specifies what file extensions to lint. See the [documentation](https://docs.errata.ai/vale-server/concepts/scoping#formats) for more information on the supported file formats. (**NOTE**: When adding a new extension, make sure you've also added it to your `.vale.ini` configuration file.)"
-				},
 				"vale.core.useCLI": {
 					"type": "boolean",
 					"default": false,
@@ -145,27 +130,6 @@
 					"description": "URL to your running Vale Server instance.",
 					"markdownDeprecationMessage": "**Deprecated**: Please use `#vale.server.serverURL#` instead.",
 					"deprecationMessage": "Deprecated: Please use vale.server.serverURL instead."
-				},
-				"vale-server.extensions": {
-					"type": [
-						"string",
-						"array"
-					],
-					"items": {
-						"type": "string"
-					},
-					"default": [
-						".md",
-						".markdown",
-						".rst",
-						".adoc",
-						".asciidoc",
-						".txt",
-						".tex"
-					],
-					"description": "File extensions to lint.",
-					"markdownDeprecationMessage": "**Deprecated**: Please use `#vale.core.extensions#` instead.",
-					"deprecationMessage": "Deprecated: Please use vale.core.extensions instead."
 				}
 			}
 		}

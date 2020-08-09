@@ -92,6 +92,22 @@ const toTitle = (alert: IValeErrorJSON, suggestion: string): string => {
 };
 
 /**
+ * Whether a given document is elligible for linting.
+ *
+ * A document is elligible if it's in a supported format and saved to disk.
+ *
+ * @param document The document to check
+ * @return Whether the document is elligible
+ */
+const isElligibleDocument = (document: vscode.TextDocument): boolean => {
+  if (document.isDirty) {
+      vscode.window.showErrorMessage('Please save the file before linting.');
+      return false;
+    }
+  return vscode.languages.match({ scheme: "file" }, document) > 0;
+};
+
+/**
  * Convert a Vale error to a code diagnostic.
  *
  * @param alert The alert to convert
@@ -166,25 +182,14 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
   private async doVale(textDocument: vscode.TextDocument) {
     const configuration = workspace.getConfiguration();
-    const ext = path.extname(textDocument.fileName);
-
-    let supported = configuration.get('vale.core.extensions', [
-      '.md', '.rst', '.adoc', '.txt'
-    ]);
-
-    if (supported.indexOf(ext) < 0) {
+    if (!isElligibleDocument(textDocument)) {
       return;
     }
 
     // Reset out alert map:
     this.alertMap = {};
-
-    if (!textDocument.fileName.length) {
-      vscode.window.showErrorMessage('Please save the file before linting.');
-      return;
-    }
-
     this.useCLI = configuration.get('vale.core.useCLI', false);
+
     if (!this.useCLI) {
       // We're using Vale Server ...
       let server: string = workspace.getConfiguration().get(
@@ -212,7 +217,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     } else {
       // We're using the CLI ...
       try {
-        const result = await this.runVale(textDocument);
+        await this.runVale(textDocument);
       } catch (error) {
         vscode.window.showErrorMessage(
           `There was an error running Vale ${error}.`
