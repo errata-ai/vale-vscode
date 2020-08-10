@@ -23,8 +23,7 @@
 		"Linters"
 	],
 	"activationEvents": [
-		"onLanguage:plaintext",
-		"onCommand:vale.addToVocab"
+		"*"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
