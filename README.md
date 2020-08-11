@@ -4,7 +4,7 @@
 
 The Vale extension for VS Code provides customizable spelling, style, and grammar checking for a variety of markup formats (Markdown, AsciiDoc, reStructuredText, HTML, and DITA).
 
-The extension supports both [Vale](https://github.com/errata-ai/vale) (the command-line tool) and [Vale Server](https://errata.ai/vale-server/) (the desktop application).
+As of **v0.10.0**, the extension supports both [Vale](https://github.com/errata-ai/vale) (the command-line tool) and [Vale Server](https://errata.ai/vale-server/) (the desktop application).
 
 ## Installation
 
