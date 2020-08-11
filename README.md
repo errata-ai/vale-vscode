@@ -1,92 +1,86 @@
-# Vale Extension for VS Code
+# Vale + VS Code
 
-> The official Visual Studio Code extension for [Vale](https://errata.ai/vale) and [Vale Server](https://errata.ai/vale-server/).
+> The official Visual Studio Code extension for [Vale](https://github.com/errata-ai/vale) and [Vale Server](https://errata.ai/vale-server/).
 
-The Vale extension provides customizable spelling, style, and grammar checking for English text.
+The Vale extension for VS Code provides customizable spelling, style, and grammar checking for a variety of markup formats (Markdown, AsciiDoc, reStructuredText, HTML, and DITA).
+
+As of **v0.10.0**, the extension supports both [Vale](https://github.com/errata-ai/vale) (the command-line tool) and [Vale Server](https://errata.ai/vale-server/) (the desktop application).
 
 ## Installation
 
-You can use this extension with Vale CLI, Vale server, or both.
+> **NOTE**: While both Vale and Vale Server are supported, many of the extension's more [advanced features](#features) (such as Quick Fixes and Vocabulary Management) are only available through Vale Server. 
 
-To get started with Vale CLI:
+### Using Vale Server
 
-1. Install [Vale CLI](https://errata.ai/vale)
-2. Install and configure styles
+1. Install [Vale Server](https://errata.ai/vale-server/);
 
-To get started with Vale Server:
+2. install `vale-vscode` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server); and
 
-1. Install [Vale Server](https://errata.ai/vale-server/)
+3. restart VS Code (recommended).
 
-1. Install `vale-vscode` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-vscode); and
-2. restart VS Code (if necessary)
-3. Toggle using Vale CLI or Server from _Preferences > Extensions > Vale > Use CLI_
+### Using Vale
+
+1. Install [Vale](https://docs.errata.ai/vale/install);
+
+2. install `vale-vscode` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server);
+
+3. set [`vale.core.useCLI`](#settings) to `true` in the extension settings (_Preferences > Extensions > Vale > Use CLI_); and
+
+4. restart VS Code (recommended).
 
 ## Features
 
-<table>
-    <tr>
-        <th>Detailed Problems View</th>
-        <th>Go-To Rule</th>
-    </tr>
-    <tr>
-        <td width="50%">
-            <a href="https://user-images.githubusercontent.com/8785025/60772616-10e97600-a0ae-11e9-86d1-83dfe1872f2f.png">
-                <img src="https://user-images.githubusercontent.com/8785025/60772616-10e97600-a0ae-11e9-86d1-83dfe1872f2f.png" width="100%">
-            </a>
-        </td>
-        <td width="50%">
-            <a href="https://user-images.githubusercontent.com/8785025/60772682-b6044e80-a0ae-11e9-8ab3-e94ff06204c9.gif">
-                <img src="https://user-images.githubusercontent.com/8785025/60772682-b6044e80-a0ae-11e9-8ab3-e94ff06204c9.gif" width="100%">
-            </a>
-        </td>
-    </tr>
-    <tr>
-        <td width="50%">
-            Browse detailed information for each alert.
-        </td>
-        <td width="50%">Easily navigate to any rule's implementation.</td>
-    </tr>
-    <tr>
-        <th>Quick Fixes</th>
-        <th>Build your own style according to <a href="https://errata-ai.github.io/vale-server/docs/style">custom rules</a></th>
-    </tr>
-    <tr>
-        <td width="50%">
-            <a href="https://user-images.githubusercontent.com/8785025/66071464-0c472900-e508-11e9-882f-5b83011d0a92.png">
-                <img src="https://user-images.githubusercontent.com/8785025/66071464-0c472900-e508-11e9-882f-5b83011d0a92.png" width="100%">
-            </a>
-        </td>
-        <td width="50%">
-            <a href="https://user-images.githubusercontent.com/8785025/66071907-d9e9fb80-e508-11e9-80ec-62b7a08d27cb.png">
-                <img src="https://user-images.githubusercontent.com/8785025/66071907-d9e9fb80-e508-11e9-80ec-62b7a08d27cb.png" width="100%">
-            </a>
-        </td>
-    </tr>
-    <tr>
-        <td width="50%">Choose from a selection of provided 'Quick Fixes'.</td>
-        <td width="50%">Implement your own rules or follow an existing style guide.</td>
-    </tr>
-</table>
+### Detailed Problems View
 
-## Usage
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/8785025/89956665-76c9fa80-dbea-11ea-9eba-3f272a5a26e5.png" />
+</p>
 
-Vale for VSCode automatically checks a document when you open or save it.  Use the `Vale: Lint workspace` command to check a file manually.
+Browse detailed information for each alert, including the file location, style, and rule ID.
 
-This extension supports the following file extensions by default, but you can change them with the `vscode-vale.fileExtensions` config item (see below):
+### Go-To Rule
 
--   **Asciidoc**: _.adoc_ and _.asciidoc_
--   **Markdown**: _.md_ and _.markdown_
--   **reStructuredText**: _.rst_
--   **LaTeX**: _.tex_
--   **plain text**: _.txt_
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/8785025/89956857-d1635680-dbea-11ea-8e50-8e2715721e5d.png" />
+</p>
+
+Quickly navigate from an in-editor alert to a rule's implementation on your `StylesPath` by clicking "View Rule".
+
+### Quick Fixes (Vale Server only)
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/8785025/89957413-2eabd780-dbec-11ea-97e1-9a04bce950ce.png" />
+</p>
+
+Fix misspellings, word usage, capitalization, and more using [Quick Fixes](https://code.visualstudio.com/docs/editor/refactoring#_code-actions-quick-fixes-and-refactorings) (macOS: <kbd>cmd</kbd> + <kbd>.</kbd>, Windows/Linux: <kbd>Ctrl</kbd> + <kbd>.</kbd>)
+
+### Vocab Management (Vale Server only)
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/8785025/89957619-b8f43b80-dbec-11ea-846d-0d9ee7f50088.png" />
+</p>
+
+Easily add words and phrases to your active Vocab through the in-editor context menu.
+
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/8785025/89957701-f062e800-dbec-11ea-9d03-2d9ce2542f03.png" />
+</p>
+
+Jump to your active Vocab files directly from the Command Palatte.
 
 ## Settings
 
-The following settings are available:
+The extension offers a number of settings and configuration options (_Preferences > Extensions > Vale_), which are split into three groups: `Vale > Core` (Vale and Vale Server), `Vale > Server` (Vale Server only), and `Vale > Vale CLI` (Vale only).
 
-- `vale-vscode.useCLI`: (default `false`). Use Vale CLI instead of Vale Server.
--   `vscode-vale.configPath`: Absolute path to Vale config file when using CLI. If not specified, uses normal Vale config scoping rules.
--   `vscode-vale.path`: (default `vale`). Absolute path to the `vale` binary when using CLI, useful if you don't want to use the global binary.
+- `vale.core.useCLI` (default: `false`): Use Vale CLI instead of Vale Server.
+
+- `vale.server.serverURL` (default: `http://127.0.0.1:7777`): URL to your running Vale Server instance.
+
+- `vale.server.provideFixes` (default: `true`): Offer solutions to alerts using the 'Quick Fix' button.
+
+- `vale.valeCLI.config` (default: `null`): Absolute path to a Vale config file. If not specified, the default search process will be used (relative to the current file).
+
+-   `vale.valeCLI.path` (default: `null`): Absolute path to the Vale binary. The predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable can be used to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)
 
     **Example**
 
@@ -99,6 +93,3 @@ The following settings are available:
     "vscode-vale.path": "/some/path/to/vale"
     }
     ```
-
-- `vscode-vale.serverURL`: (default `http://localhost:7777`). URL to running Vale Server instance.
-- `vscode-vale.extensions`: (default `".md", ".rst", ".adoc", ".txt"`). File extensions to lint. Note, these also need to be in your Vale config file if you are using Vale CLI.
