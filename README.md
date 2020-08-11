@@ -24,9 +24,9 @@ As of **v0.10.0**, the extension supports both [Vale](https://github.com/errata-
 
 2. install `vale-vscode` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server);
 
-3. restart VS Code (recommended); and
+3. set [`vale.core.useCLI`](#settings) to `true` in the extension settings (_Preferences > Extensions > Vale > Use CLI_); and
 
-4. Set [`vale.core.useCLI`](#settings) to `true` in the extension settings (_Preferences > Extensions > Vale > Use CLI_).
+4. restart VS Code (recommended).
 
 ## Features
 
