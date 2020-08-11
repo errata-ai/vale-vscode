@@ -68,9 +68,9 @@ Easily add words and phrases to your active Vocab through the in-editor context 
 
 Jump to your active Vocab files directly from the Command Palatte.
 
-## Settings (_Preferences > Extensions > Vale_)
+## Settings
 
-The extension offers a number of settings and configuration options, which are split into three groups: `Vale > Core` (Vale and Vale Server), `Vale > Server` (Vale Server only), and `Vale > Vale CLI` (Vale only).
+The extension offers a number of settings and configuration options (_Preferences > Extensions > Vale_), which are split into three groups: `Vale > Core` (Vale and Vale Server), `Vale > Server` (Vale Server only), and `Vale > Vale CLI` (Vale only).
 
 - `vale.core.useCLI` (default: `false`): Use Vale CLI instead of Vale Server.
 
