@@ -72,7 +72,7 @@ Jump to your active Vocab files directly from the Command Palatte.
 
 The extension offers a number of settings and configuration options, which are split into three groups: `Vale > Core` (Vale and Vale Server), `Vale > Server` (Vale Server only), and `Vale > Vale CLI` (Vale only).
 
-- `vale.core.useCLI` (default `false`): Use Vale CLI instead of Vale Server.
+- `vale.core.useCLI` (default: `false`): Use Vale CLI instead of Vale Server.
 
 - `vale.server.serverURL` (default: `http://127.0.0.1:7777`): URL to your running Vale Server instance.
 
