@@ -8,7 +8,7 @@ The extension supports both [Vale](https://github.com/errata-ai/vale) (the comma
 
 ## Installation
 
-> **NOTE**: While both Vale and Vale Server are supported, many of the extension's more [advanced features](#features) (such as Quick Fixes and Vocabulary Management are only available through Vale Server. 
+> **NOTE**: While both Vale and Vale Server are supported, many of the extension's more [advanced features](#features) (such as Quick Fixes and Vocabulary Management) are only available through Vale Server. 
 
 ### Using Vale Server
 
