@@ -78,7 +78,7 @@ The extension offers a number of settings and configuration options, which are s
 
 - `vale.server.provideFixes` (default: `true`): Offer solutions to alerts using the 'Quick Fix' button.
 
-- `vale.valeCLI.config` (default: `null`):: Absolute path to a Vale config file. If not specified, the default search process will be used (relative to the current file).
+- `vale.valeCLI.config` (default: `null`): Absolute path to a Vale config file. If not specified, the default search process will be used (relative to the current file).
 
 -   `vale.valeCLI.path` (default: `null`): Absolute path to the Vale binary. The predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable can be used to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)
 
