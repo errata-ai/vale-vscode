@@ -3,10 +3,9 @@
 See [Publishing Extensions](https://code.visualstudio.com/api/working-with-extensions/publishing-extension).
 
 ```console
-$ npm run webpack
+# Change version in package.json first!
 $ vsce package
-# This handles bumping the version:
-$ vsce publish minor
+$ vsce publish
 ```
 
 Then cut a new GitHub release.
