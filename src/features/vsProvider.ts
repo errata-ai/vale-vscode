@@ -147,11 +147,11 @@ const toDiagnostic = (
  * @return The standard output of the program
  */
 const runInWorkspace = (
-  folder: WorkspaceFolder | undefined,
+  folder: string | undefined,
   command: ReadonlyArray<string>,
 ): Promise<string> =>
   new Promise((resolve, reject) => {
-    const cwd = folder ? folder.uri.fsPath : process.cwd();
+    const cwd = folder ? folder : process.cwd();
     const maxBuffer = 10 * 1024 * 1024; // 10MB buffer for large results
     execFile(
       command[0],
@@ -252,7 +252,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       file.fileName,
     ];
 
-    const folder = workspace.getWorkspaceFolder(file.uri);
+    const folder = path.dirname(file.fileName);
     const stdout = await runInWorkspace(folder, command);
 
     this.handleJSON(stdout.toString(), file);
