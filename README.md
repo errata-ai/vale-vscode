@@ -8,7 +8,7 @@ As of **v0.10.0**, the extension supports both [Vale](https://github.com/errata-
 
 ## Installation
 
-> **NOTE**: While both Vale and Vale Server are supported, many of the extension's more [advanced features](#features) (such as Quick Fixes and Vocabulary Management) are only available through Vale Server. 
+> **NOTE**: While this extension supports both Vale CLI and Vale Server, many of the extension's more [advanced features](#features) (such as Quick Fixes and Vocabulary Management) are only available through Vale Server.
 
 ### Using Vale Server
 
@@ -44,7 +44,7 @@ Browse detailed information for each alert, including the file location, style, 
   <img src="https://user-images.githubusercontent.com/8785025/89956857-d1635680-dbea-11ea-8e50-8e2715721e5d.png" />
 </p>
 
-Quickly navigate from an in-editor alert to a rule's implementation on your `StylesPath` by clicking "View Rule".
+Navigate from an in-editor alert to a rule's implementation on your `StylesPath` by clicking "View Rule".
 
 ### Quick Fixes (Vale Server only)
 
@@ -60,13 +60,13 @@ Fix misspellings, word usage, capitalization, and more using [Quick Fixes](https
   <img src="https://user-images.githubusercontent.com/8785025/89957619-b8f43b80-dbec-11ea-846d-0d9ee7f50088.png" />
 </p>
 
-Easily add words and phrases to your active Vocab through the in-editor context menu.
+Add words and phrases to your active Vocab through the in-editor context menu.
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/8785025/89957701-f062e800-dbec-11ea-9d03-2d9ce2542f03.png" />
 </p>
 
-Jump to your active Vocab files directly from the Command Palatte.
+Jump to your active Vocab files directly from the Command Palette.
 
 ## Settings
 
@@ -78,9 +78,9 @@ The extension offers a number of settings and configuration options (_Preference
 
 - `vale.server.provideFixes` (default: `true`): Offer solutions to alerts using the 'Quick Fix' button.
 
-- `vale.valeCLI.config` (default: `null`): Absolute path to a Vale config file. If not specified, the default search process will be used (relative to the current file).
+- `vale.valeCLI.config` (default: `null`): Absolute path to a Vale config file. If not specified, the extension uses the default search process (relative to the current file).
 
--   `vale.valeCLI.path` (default: `null`): Absolute path to the Vale binary. The predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable can be used to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)
+-   `vale.valeCLI.path` (default: `null`): Absolute path to the Vale binary. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)
 
     **Example**
 
