@@ -50,7 +50,7 @@ const readBinaryLocation = () => {
     return path.normalize(customBinaryPath);
   }
   // Assume that the binary is installed globally
-  return which.sync("vale", { pathExt: ".cmd" });
+  return which.sync("vale");
 };
 
 const readFileLocation = () => {
