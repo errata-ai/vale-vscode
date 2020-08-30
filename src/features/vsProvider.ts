@@ -11,7 +11,10 @@ import * as vscode from 'vscode';
 import {
   workspace,
   WorkspaceFolder,
+  StatusBarItem
 } from "vscode";
+
+let readabilityStatus: StatusBarItem;
 
 import InitCommands from './vsCommands';
 
@@ -101,9 +104,9 @@ const toTitle = (alert: IValeErrorJSON, suggestion: string): string => {
  */
 const isElligibleDocument = (document: vscode.TextDocument): boolean => {
   if (document.isDirty) {
-      vscode.window.showErrorMessage('Please save the file before linting.');
-      return false;
-    }
+    vscode.window.showErrorMessage('Please save the file before linting.');
+    return false;
+  }
   return vscode.languages.match({ scheme: "file" }, document) > 0;
 };
 
@@ -261,14 +264,21 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   private handleJSON(contents: string, textDocument: vscode.TextDocument) {
     const diagnostics: vscode.Diagnostic[] = [];
     let body = JSON.parse(contents.toString());
-
     const backend = this.useCLI ? "Vale" : "Vale Server";
+    readabilityStatus.hide();
+
     for (let key in body) {
       const alerts = body[key];
+
+      if (alerts[0].Match === "") {
+        var readabilityMessage = alerts[0].Message;
+        // TODO: It seemed a good idea to remove the item if it exists, but don't need to.
+        alerts.splice(0, 1);
+        this.updateStatusBarItem(readabilityMessage);
+      }
+
       for (var i = 0; i < alerts.length; ++i) {
-
         let diagnostic = toDiagnostic(alerts[i], this.stylesPath, backend);
-
         let key = `${diagnostic.message}-${diagnostic.range}`;
         this.alertMap[key] = alerts[i];
 
@@ -278,6 +288,11 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
     this.diagnosticCollection.set(textDocument.uri, diagnostics);
     this.diagnosticMap[textDocument.uri.toString()] = diagnostics;
+  }
+
+  private updateStatusBarItem(message: string): void {
+    readabilityStatus.text = `${message}`;
+    readabilityStatus.show();
   }
 
   public async provideCodeActions(
@@ -382,6 +397,12 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       this
     );
     subscriptions.push(this);
+
+
+    // create a new status bar item that we can now manage
+    readabilityStatus = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    // readabilityStatus.command = myCommandId;
+
 
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection();
 
