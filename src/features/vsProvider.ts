@@ -270,19 +270,18 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     for (let key in body) {
       const alerts = body[key];
 
-      if (alerts[0].Match === "") {
-        var readabilityMessage = alerts[0].Message;
-        // TODO: It seemed a good idea to remove the item if it exists, but don't need to.
-        alerts.splice(0, 1);
-        this.updateStatusBarItem(readabilityMessage);
-      }
-
       for (var i = 0; i < alerts.length; ++i) {
-        let diagnostic = toDiagnostic(alerts[i], this.stylesPath, backend);
-        let key = `${diagnostic.message}-${diagnostic.range}`;
-        this.alertMap[key] = alerts[i];
-
-        diagnostics.push(diagnostic);
+        if (alerts[i].Match === "") {
+          var readabilityMessage = alerts[0].Message;
+          alerts.splice(i, 1);
+          this.updateStatusBarItem(readabilityMessage);
+        } else {
+          let diagnostic = toDiagnostic(alerts[i], this.stylesPath, backend);
+          let key = `${diagnostic.message}-${diagnostic.range}`;
+          this.alertMap[key] = alerts[i];
+      
+          diagnostics.push(diagnostic);
+        }
       }
     }
 
