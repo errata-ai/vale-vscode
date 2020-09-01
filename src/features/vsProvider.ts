@@ -273,7 +273,6 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       for (var i = 0; i < alerts.length; ++i) {
         if (alerts[i].Match === "") {
           var readabilityMessage = alerts[0].Message;
-          alerts.splice(i, 1);
           this.updateStatusBarItem(readabilityMessage);
         } else {
           let diagnostic = toDiagnostic(alerts[i], this.stylesPath, backend);
