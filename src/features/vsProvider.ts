@@ -1,18 +1,15 @@
 'use strict';
 
 import * as path from 'path';
-
 import * as request from 'request-promise-native';
-
 import * as vscode from 'vscode';
 
 import InitCommands from './vsCommands';
 import * as utils from './vsUtils';
 
-let readabilityStatus: vscode.StatusBarItem;
-
 export default class ValeServerProvider implements vscode.CodeActionProvider {
   private diagnosticCollection!: vscode.DiagnosticCollection;
+  private readabilityStatus!: vscode.StatusBarItem;
   private alertMap: Record<string, IValeErrorJSON> = {};
   private diagnosticMap: Record<string, vscode.Diagnostic[]> = {};
   private stylesPath!: string;
@@ -33,10 +30,10 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
     if (!this.useCLI) {
       // We're using Vale Server ...
-      const useContext = configuration.get('vale.core.lintContext', false);
+      const limit = configuration.get('vale.server.lintContext', 0);
 
       let response: string = "";
-      if (useContext) {
+      if (limit < 0 || (limit > 0 && textDocument.lineCount >= limit)) {
         const ext = path.extname(textDocument.fileName);
         const ctx = utils.findContext();
 
@@ -62,18 +59,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     const binaryLocation = utils.readBinaryLocation();
     const configLocation = utils.readFileLocation()!;
 
-    const stylesPath: ReadonlyArray<string> = [
-      binaryLocation,
-      "--no-exit",
-      "--config",
-      configLocation,
-      "ls-config"
-    ];
-
-    var configOut = await utils.runInWorkspace(undefined, stylesPath);
-    const configCLI = JSON.parse(configOut);
-    this.stylesPath = configCLI.StylesPath;
-
+    this.stylesPath = await utils.getStylesPath(false);
     const command: ReadonlyArray<string> = [
       binaryLocation,
       "--no-exit",
@@ -95,7 +81,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     let body = JSON.parse(contents.toString());
     const backend = this.useCLI ? "Vale" : "Vale Server";
 
-    readabilityStatus.hide();
+    this.readabilityStatus.hide();
     for (let key in body) {
       const alerts = body[key];
       for (var i = 0; i < alerts.length; ++i) {
@@ -119,8 +105,8 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   }
 
   private updateStatusBarItem(message: string): void {
-    readabilityStatus.text = `${message}`;
-    readabilityStatus.show();
+    this.readabilityStatus.text = `${message}`;
+    this.readabilityStatus.show();
   }
 
   public async provideCodeActions(
@@ -226,25 +212,12 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     );
     subscriptions.push(this);
 
-    readabilityStatus = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-
+    this.readabilityStatus = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection();
 
     this.useCLI = configuration.get('vale.core.useCLI', false);
-    if (!this.useCLI) {
-      let server: string = configuration.get(
-        'vale.server.serverURL',
-        'http://localhost:7777'
-      );
+    this.stylesPath = await utils.getStylesPath(this.useCLI);
 
-      await request.get({ uri: server + '/path', json: true })
-        .catch((error) => {
-          throw new Error(`Vale Server could not connect: ${error}.`);
-        })
-        .then((body) => {
-          this.stylesPath = body.path;
-        });
-    }
     vscode.workspace.onDidOpenTextDocument(this.doVale, this, subscriptions);
     vscode.workspace.onDidCloseTextDocument((textDocument) => {
       this.diagnosticCollection.delete(textDocument.uri);
@@ -263,6 +236,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
     this.diagnosticCollection.dispose();
     this.command.dispose();
+    this.readabilityStatus.dispose();
 
     this.diagnosticMap = {};
     this.alertMap = {};

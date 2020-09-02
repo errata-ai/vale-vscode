@@ -97,11 +97,6 @@
 					"default": false,
 					"markdownDescription": "Use Vale's CLI instead of Vale Server. (**NOTE**: Some features, such as [Quick Fixes](https://github.com/errata-ai/vale-vscode/pull/4) and [Vocab Management](https://github.com/errata-ai/vale-vscode/pull/4), are only available when using Vale Server.)"
 				},
-				"vale.core.lintContext": {
-					"type": "boolean",
-					"default": false,
-					"markdownDescription": "Only lint the *active* portion of a document (as determined by the cursor position), allowing for efficient on-the-fly linting of large documents."
-				},
 
 				"vale.server.serverURL": {
 					"type": "string",
@@ -112,6 +107,11 @@
 					"type": "boolean",
 					"default": true,
 					"description": "Offer solutions to alerts using the 'Quick Fix' button."
+				},
+				"vale.server.lintContext": {
+					"type": "number",
+					"default": 0,
+					"markdownDescription": "Only lint the *active* portion of a document (as determined by the cursor position), allowing for efficient on-the-fly linting of large documents. There are three supported values: `-1` (applies to all files), `0` (disabled), `n` (applies to any file with `lines >= n`)."
 				},
 
 				"vale.valeCLI.config": {
