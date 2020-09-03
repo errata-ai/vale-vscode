@@ -59,7 +59,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     const binaryLocation = utils.readBinaryLocation();
     const configLocation = utils.readFileLocation()!;
 
-    this.stylesPath = await utils.getStylesPath(false);
+    this.stylesPath = await utils.getStylesPath(true);
     const command: ReadonlyArray<string> = [
       binaryLocation,
       "--no-exit",
