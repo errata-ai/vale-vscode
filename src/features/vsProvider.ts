@@ -32,7 +32,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       // We're using Vale Server ...
       const limit = configuration.get('vale.server.lintContext', 0);
 
-      let response: string = "";
+      let response: string = '';
       if (limit < 0 || (limit > 0 && textDocument.lineCount >= limit)) {
         const ext = path.extname(textDocument.fileName);
         const ctx = utils.findContext();
@@ -56,21 +56,24 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   }
 
   private async runVale(file: vscode.TextDocument) {
-    const binaryLocation = utils.readBinaryLocation();
-    const configLocation = utils.readFileLocation()!;
+    const folder = path.dirname(file.fileName);
+    const binaryLocation = utils.readBinaryLocation(file.uri);
+    const configLocation = utils.readFileLocation(file.uri);
 
-    this.stylesPath = await utils.getStylesPath(true);
+    this.stylesPath = await utils.getStylesPath({
+      usingCLI: true,
+      binaryLocation,
+      configLocation,
+    });
     const command: ReadonlyArray<string> = [
       binaryLocation,
-      "--no-exit",
-      "--config",
-      configLocation,
-      "--output",
-      "JSON",
+      '--no-exit',
+      ...(configLocation ? ['--config', configLocation] : []),
+      '--output',
+      'JSON',
       file.fileName,
     ];
 
-    const folder = path.dirname(file.fileName);
     const stdout = await utils.runInWorkspace(folder, command);
 
     this.handleJSON(stdout.toString(), file, 0);
@@ -79,13 +82,13 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   private handleJSON(contents: string, doc: vscode.TextDocument, offset: number) {
     const diagnostics: vscode.Diagnostic[] = [];
     let body = JSON.parse(contents.toString());
-    const backend = this.useCLI ? "Vale" : "Vale Server";
+    const backend = this.useCLI ? 'Vale' : 'Vale Server';
 
     this.readabilityStatus.hide();
     for (let key in body) {
       const alerts = body[key];
       for (var i = 0; i < alerts.length; ++i) {
-        if (alerts[i].Match === "") {
+        if (alerts[i].Match === '') {
           var readabilityMessage = alerts[0].Message;
           this.updateStatusBarItem(readabilityMessage);
         } else {
@@ -133,7 +136,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       .post({
         uri: server + '/suggest',
         qs: { alert: JSON.stringify(alert) },
-        json: true
+        json: true,
       })
       .catch((error) => {
         return Promise.reject(`Vale Server could not connect: ${error}.`);
@@ -153,8 +156,8 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
               diagnostic,
               alert.Match,
               suggestion,
-              alert.Action.Name
-            ]
+              alert.Action.Name,
+            ],
           };
 
           actions.push(action);
@@ -165,8 +168,12 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   }
 
   private runCodeAction(
-    document: vscode.TextDocument, diagnostic: vscode.Diagnostic,
-    error: string, suggestion: string, action: string): any {
+    document: vscode.TextDocument,
+    diagnostic: vscode.Diagnostic,
+    error: string,
+    suggestion: string,
+    action: string
+  ): any {
     let docError: string = document.getText(diagnostic.range);
 
     if (error === docError) {
@@ -190,14 +197,16 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
         // double space.
         const range = new vscode.Range(
           diagnostic.range.start.line, diagnostic.range.start.character,
-          diagnostic.range.end.line, diagnostic.range.end.character + 1);
+          diagnostic.range.end.line, diagnostic.range.end.character + 1
+        );
         edit.delete(document.uri, range);
       }
 
       return vscode.workspace.applyEdit(edit);
     } else {
       vscode.window.showErrorMessage(
-        'The suggestion was not applied because it is out of date.');
+        'The suggestion was not applied because it is out of date.'
+      );
       console.log(error, docError);
     }
   }
@@ -212,11 +221,14 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     );
     subscriptions.push(this);
 
-    this.readabilityStatus = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    this.readabilityStatus =
+      vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection();
 
     this.useCLI = configuration.get('vale.core.useCLI', false);
-    this.stylesPath = await utils.getStylesPath(this.useCLI);
+    // this.stylesPath = await utils.getStylesPath({
+    //   usingCLI: this.useCLI,
+    // });
 
     vscode.workspace.onDidOpenTextDocument(this.doVale, this, subscriptions);
     vscode.workspace.onDidCloseTextDocument((textDocument) => {

@@ -1,27 +1,39 @@
 import * as path from 'path';
-import * as which from "which";
+import * as which from 'which';
 import * as fs from 'fs';
 import * as request from 'request-promise-native';
-import { execFile } from "child_process";
+import { execFile } from 'child_process';
 
 import * as vscode from 'vscode';
-import { off } from 'process';
 
-export const readBinaryLocation = () => {
+export const readBinaryLocation = (uri: vscode.Uri): string => {
     const configuration = vscode.workspace.getConfiguration();
-    const customBinaryPath = configuration.get<string>("vale.valeCLI.path");
-    if (customBinaryPath) {
-        return path.normalize(customBinaryPath);
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
+    const customBinaryPath = configuration.get<string>('vale.valeCLI.path');
+    if (customBinaryPath && workspaceFolder) {
+        return path.normalize(
+            customBinaryPath.replace(
+                '${workspaceFolder}',
+                workspaceFolder.uri.fsPath,
+            ),
+        );
     }
     // Assume that the binary is installed globally
-    return which.sync("vale");
+    return which.sync('vale');
 };
 
-export const readFileLocation = () => {
+export const readFileLocation = (uri: vscode.Uri): string | undefined => {
     const configuration = vscode.workspace.getConfiguration();
-    const customConfigPath = configuration.get<string>("vale.valeCLI.config");
-
-    // Assume that the binary is installed globally
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
+    const customConfigPath = configuration.get<string>('vale.valeCLI.config');
+    if (customConfigPath && workspaceFolder) {
+        return path.normalize(
+            customConfigPath.replace(
+                '${workspaceFolder}',
+                workspaceFolder.uri.fsPath,
+            ),
+        );
+    }
     return customConfigPath;
 };
 
@@ -68,7 +80,7 @@ export const isElligibleDocument = (document: vscode.TextDocument): boolean => {
         vscode.window.showErrorMessage('Please save the file before linting.');
         return false;
     }
-    return vscode.languages.match({ scheme: "file" }, document) > 0;
+    return vscode.languages.match({ scheme: 'file' }, document) > 0;
 };
 
 /**
@@ -130,7 +142,7 @@ export const runInWorkspace = (
                 if (error) {
                     // Throw system errors, but do not fail if the command
                     // fails with a non-zero exit code.
-                    console.error("Command error", command, error);
+                    console.error('Command error', command, error);
                     reject(error);
                 } else {
                     resolve(stdout);
@@ -161,7 +173,7 @@ const extractParagraph = (editor: vscode.TextEditor): vscode.Range => {
 export const findContext = (): IEditorContext => {
     const editor = vscode.window.activeTextEditor;
 
-    let context: IEditorContext = {Content: "", Offset: 0};
+    let context: IEditorContext = {Content: '', Offset: 0};
     if (!editor) {
         return context;
     }
@@ -178,7 +190,7 @@ export const postFile = async (doc: vscode.TextDocument): Promise<string> => {
         'vale.server.serverURL',
         'http://localhost:7777'
     );
-    let response: string = "";
+    let response: string = '';
 
     await request
         .post({
@@ -205,7 +217,7 @@ export const postString = async (content: string, ext: string): Promise<string> 
         'vale.server.serverURL',
         'http://localhost:7777'
     );
-    let response: string = "";
+    let response: string = '';
 
     await request
         .post({
@@ -227,11 +239,17 @@ export const postString = async (content: string, ext: string): Promise<string> 
     return response;
 };
 
-export const getStylesPath = async (usingCLI: boolean): Promise<string> => {
+export const getStylesPath = async (
+    options: {
+        usingCLI: boolean,
+        binaryLocation: string,
+        configLocation?: string,
+    }
+): Promise<string> => {
     const configuration = vscode.workspace.getConfiguration();
 
-    let path: string = "";
-    if (!usingCLI) {
+    let path: string = '';
+    if (!options.usingCLI) {
         let server: string = configuration.get(
             'vale.server.serverURL',
             'http://localhost:7777'
@@ -245,15 +263,11 @@ export const getStylesPath = async (usingCLI: boolean): Promise<string> => {
                 path = body.path;
             });
     } else {
-        const binaryLocation = readBinaryLocation();
-        const configLocation = readFileLocation()!;
-
         const stylesPath: ReadonlyArray<string> = [
-            binaryLocation,
-            "--no-exit",
-            "--config",
-            configLocation,
-            "ls-config"
+            options.binaryLocation,
+            '--no-exit',
+            ...(options.configLocation ? ['--config', options.configLocation] : []),
+            'ls-config'
         ];
 
         var configOut = await runInWorkspace(undefined, stylesPath);
