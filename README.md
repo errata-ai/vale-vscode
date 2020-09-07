@@ -78,7 +78,9 @@ The extension offers a number of settings and configuration options (_Preference
 
 - `vale.server.provideFixes` (default: `true`): Offer solutions to alerts using the 'Quick Fix' button.
 
-- `vale.valeCLI.config` (default: `null`): Absolute path to a Vale config file. If not specified, the extension uses the default search process (relative to the current file).
+- `vale.server.lintContext` (default: `0`): Only lint the *active* portion of a document (as determined by the cursor position), allowing for efficient on-the-fly linting of large documents. There are three supported values: `-1` (applies to all files), `0` (disabled), `n` (applies to any file with `lines >= n`).
+
+- `vale.valeCLI.config` (default: `null`): Absolute path to a Vale configuration file. If not specified, the extension uses the default search process (relative to the current file).
 
 -   `vale.valeCLI.path` (default: `null`): Absolute path to the Vale binary. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)
 
