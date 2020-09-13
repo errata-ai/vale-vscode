@@ -84,7 +84,7 @@ The extension offers a number of settings and configuration options (_Preference
 
     **Example**
 
-    ```js
+    ```jsonc
     {
       // You can use ${workspaceFolder} it will be replaced by workspace folder path
       "vale.valeCLI.config": "${workspaceFolder}/node_modules/some-package/.vale.ini"
@@ -98,7 +98,7 @@ The extension offers a number of settings and configuration options (_Preference
 
     **Example**
 
-    ```json
+    ```jsonc
     {
       // You can use ${workspaceFolder} it will be replaced by workspace folder path
       "vale.valeCLI.path": "${workspaceFolder}/node_modules/.bin/vale"
