@@ -80,18 +80,30 @@ The extension offers a number of settings and configuration options (_Preference
 
 - `vale.server.lintContext` (default: `0`): Only lint the *active* portion of a document (as determined by the cursor position), allowing for efficient on-the-fly linting of large documents. There are three supported values: `-1` (applies to all files), `0` (disabled), `n` (applies to any file with `lines >= n`).
 
-- `vale.valeCLI.config` (default: `null`): Absolute path to a Vale configuration file. If not specified, the extension uses the default search process (relative to the current file).
-
--   `vale.valeCLI.path` (default: `null`): Absolute path to the Vale binary. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)
+- `vale.valeCLI.config` (default: `null`): Absolute path to a Vale configuration file. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference configuration file from a custom location. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.) If not specified, the extension uses the default search process (relative to the current file).
 
     **Example**
 
-    ```js
+    ```jsonc
     {
-    // You can use ${workspaceFolder} it will be replaced by workspace folder path
-    "vscode-vale.path": "${workspaceFolder}/node_modules/.bin/vale"
+      // You can use ${workspaceFolder} it will be replaced by workspace folder path
+      "vale.valeCLI.config": "${workspaceFolder}/node_modules/some-package/.vale.ini"
 
-    // or use some absolute path
-    "vscode-vale.path": "/some/path/to/vale"
+      // or use some absolute path
+      "vale.valeCLI.config": "/some/path/to/.vale.ini"
+    }
+    ```
+
+- `vale.valeCLI.path` (default: `null`): Absolute path to the Vale binary. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)
+
+    **Example**
+
+    ```jsonc
+    {
+      // You can use ${workspaceFolder} it will be replaced by workspace folder path
+      "vale.valeCLI.path": "${workspaceFolder}/node_modules/.bin/vale"
+
+      // or use some absolute path
+      "vale.valeCLI.path": "/some/path/to/vale"
     }
     ```

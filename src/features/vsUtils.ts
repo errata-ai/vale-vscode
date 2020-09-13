@@ -7,22 +7,40 @@ import { execFile } from "child_process";
 import * as vscode from 'vscode';
 import { off } from 'process';
 
-export const readBinaryLocation = () => {
+export const readBinaryLocation = (file: vscode.TextDocument) => {
     const configuration = vscode.workspace.getConfiguration();
-    const customBinaryPath = configuration.get<string>("vale.valeCLI.path");
+
+    let customBinaryPath = configuration.get<string>("vale.valeCLI.path");
     if (customBinaryPath) {
-        return path.normalize(customBinaryPath);
+        customBinaryPath = path.normalize(customBinaryPath);
+        const workspaceFolder = vscode.workspace.getWorkspaceFolder(file.uri);
+        if (workspaceFolder) {
+            customBinaryPath = customBinaryPath.replace(
+                "${workspaceFolder}",
+                workspaceFolder.uri.fsPath,
+            );
+        }
+        return customBinaryPath;
     }
-    // Assume that the binary is installed globally
     return which.sync("vale");
 };
 
-export const readFileLocation = () => {
+export const readFileLocation = (file: vscode.TextDocument) => {
     const configuration = vscode.workspace.getConfiguration();
-    const customConfigPath = configuration.get<string>("vale.valeCLI.config");
 
-    // Assume that the binary is installed globally
-    return customConfigPath;
+    let customConfigPath = configuration.get<string>("vale.valeCLI.config");
+    if (customConfigPath) {
+        customConfigPath = path.normalize(customConfigPath);
+        const workspaceFolder = vscode.workspace.getWorkspaceFolder(file.uri);
+        if (workspaceFolder) {
+            customConfigPath = customConfigPath.replace(
+                "${workspaceFolder}",
+                workspaceFolder.uri.fsPath,
+            );
+        }
+        return customConfigPath;
+    }
+    return "";
 };
 
 /**
@@ -227,40 +245,22 @@ export const postString = async (content: string, ext: string): Promise<string> 
     return response;
 };
 
-export const getStylesPath = async (usingCLI: boolean): Promise<string> => {
+export const getStylesPath = async (): Promise<string> => {
     const configuration = vscode.workspace.getConfiguration();
 
     let path: string = "";
-    if (!usingCLI) {
-        let server: string = configuration.get(
-            'vale.server.serverURL',
-            'http://localhost:7777'
-        );
+    let server: string = configuration.get(
+        'vale.server.serverURL',
+        'http://localhost:7777'
+    );
 
-        await request.get({ uri: server + '/path', json: true })
-            .catch((error) => {
-                throw new Error(`Vale Server could not connect: ${error}.`);
-            })
-            .then((body) => {
-                path = body.path;
-            });
-    } else {
-        const binaryLocation = readBinaryLocation();
-        const configLocation = readFileLocation()!;
-
-        const stylesPath: ReadonlyArray<string> = [
-            binaryLocation,
-            "--no-exit",
-            "--config",
-            configLocation,
-            "ls-config"
-        ];
-
-        var configOut = await runInWorkspace(undefined, stylesPath);
-        const configCLI = JSON.parse(configOut);
-
-        path = configCLI.StylesPath;
-    }
+    await request.get({ uri: server + '/path', json: true })
+        .catch((error) => {
+            throw new Error(`Vale Server could not connect: ${error}.`);
+        })
+        .then((body) => {
+            path = body.path;
+        });
 
     return path;
-}
+};

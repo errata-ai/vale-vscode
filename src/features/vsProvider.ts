@@ -56,10 +56,22 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   }
 
   private async runVale(file: vscode.TextDocument) {
-    const binaryLocation = utils.readBinaryLocation();
-    const configLocation = utils.readFileLocation()!;
+    const binaryLocation = utils.readBinaryLocation(file);
+    const configLocation = utils.readFileLocation(file);
+    const folder = path.dirname(file.fileName);
 
-    this.stylesPath = await utils.getStylesPath(true);
+    const stylesPath: ReadonlyArray<string> = [
+      binaryLocation,
+      "--no-exit",
+      "--config",
+      configLocation,
+      "ls-config"
+    ];
+
+    const configOut = await utils.runInWorkspace(folder, stylesPath);
+    const configCLI = JSON.parse(configOut);
+
+    this.stylesPath = configCLI.StylesPath;
     const command: ReadonlyArray<string> = [
       binaryLocation,
       "--no-exit",
@@ -70,9 +82,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       file.fileName,
     ];
 
-    const folder = path.dirname(file.fileName);
     const stdout = await utils.runInWorkspace(folder, command);
-
     this.handleJSON(stdout.toString(), file, 0);
   }
 
@@ -216,7 +226,9 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection();
 
     this.useCLI = configuration.get('vale.core.useCLI', false);
-    this.stylesPath = await utils.getStylesPath(this.useCLI);
+    if (!this.useCLI) {
+      this.stylesPath = await utils.getStylesPath();
+    }
 
     vscode.workspace.onDidOpenTextDocument(this.doVale, this, subscriptions);
     vscode.workspace.onDidCloseTextDocument((textDocument) => {
