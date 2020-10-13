@@ -5,7 +5,6 @@ import * as request from 'request-promise-native';
 import { execFile } from "child_process";
 
 import * as vscode from 'vscode';
-import { off } from 'process';
 
 export const readBinaryLocation = (file: vscode.TextDocument) => {
     const configuration = vscode.workspace.getConfiguration();
@@ -145,14 +144,7 @@ export const runInWorkspace = (
             command.slice(1),
             { cwd, maxBuffer },
             (error, stdout) => {
-                if (error) {
-                    // Throw system errors, but do not fail if the command
-                    // fails with a non-zero exit code.
-                    console.error("Command error", command, error);
-                    reject(error);
-                } else {
-                    resolve(stdout);
-                }
+                resolve(stdout);
             },
         );
     });
@@ -264,3 +256,18 @@ export const getStylesPath = async (): Promise<string> => {
 
     return path;
 };
+
+export const buildCommand = (
+  exe: string,
+  config: string,
+  path: string
+): ReadonlyArray<string> => {
+  const command: ReadonlyArray<string> = [exe, "--no-exit"];
+  if (config !== "") {
+    command.concat(["--config", config]);
+  }
+
+  command.concat(["--output", "JSON", path]);
+  return command;
+};
+

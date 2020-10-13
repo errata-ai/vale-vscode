@@ -1,6 +1,7 @@
 'use strict';
 
 import * as path from 'path';
+import * as fs from 'fs';
 import * as request from 'request-promise-native';
 import * as vscode from 'vscode';
 
@@ -56,35 +57,60 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   }
 
   private async runVale(file: vscode.TextDocument) {
-    const binaryLocation = utils.readBinaryLocation(file);
-    const configLocation = utils.readFileLocation(file);
     const folder = path.dirname(file.fileName);
 
-    const stylesPath: ReadonlyArray<string> = [
-      binaryLocation,
-      "--no-exit",
-      "--config",
-      configLocation,
-      "ls-config"
-    ];
+    const binaryLocation = utils.readBinaryLocation(file);
+    const configLocation = utils.readFileLocation(file);
+    // There are two cases we need to handle here:
+    //
+    // (1) If we're given an explicit value for `--config`, then we should
+    // error if it doesn't exist.
+    //
+    // (2) If we're not given a value (the default is ""), then we need to look
+    // for a `.vale.ini`. However, we can't send an error if we don't find one
+    // because the user may simply be editing a non-Vale project/file.
+    let stylesPath: Array<string> = [];
+    if (configLocation !== "" && !fs.existsSync(configLocation)) {
+        vscode.window.showErrorMessage(
+          `There was an error running Vale: '${configLocation}' does not exist.`
+        );
+    } else if (configLocation !== "") {
+      stylesPath = [
+          binaryLocation,
+          "--no-exit",
+          "--config",
+          configLocation,
+          "ls-config"
+        ];
+    } else {
+      stylesPath = [
+          binaryLocation,
+          "--no-exit",
+          "ls-config"
+        ];
+      }
 
-    const configOut = await utils.runInWorkspace(folder, stylesPath);
-    const configCLI = JSON.parse(configOut);
+      const configOut = await utils.runInWorkspace(folder, stylesPath);
+      try {
+        const configCLI = JSON.parse(configOut);
 
-    this.stylesPath = configCLI.StylesPath;
-    const command: ReadonlyArray<string> = [
-      binaryLocation,
-      "--no-exit",
-      "--config",
-      configLocation,
-      "--output",
-      "JSON",
-      file.fileName,
-    ];
+        this.stylesPath = configCLI.StylesPath;
+        const command = utils.buildCommand(
+          binaryLocation,
+          configLocation,
+          file.fileName);
 
-    const stdout = await utils.runInWorkspace(folder, command);
-    this.handleJSON(stdout.toString(), file, 0);
-  }
+        const stdout = await utils.runInWorkspace(folder, command);
+        this.handleJSON(stdout.toString(), file, 0);
+        } catch (error) {
+          // We can't find a configuration, but this might not be an error:
+          //
+          // TODO: in case (2), how do we unintrusively communicate that we
+          // couldn't find a config file?
+          console.log("[Vale] could't find a .vale.ini file; skipping lint.");
+        }
+    }
+
 
   private handleJSON(contents: string, doc: vscode.TextDocument, offset: number) {
     const diagnostics: vscode.Diagnostic[] = [];
