@@ -270,9 +270,9 @@ export const buildCommand = (
     }
 
     let minAlertLevel: string = configuration.get<string>(
-        "vale.valeCLI.minAlertLevel", "");
+        "vale.valeCLI.minAlertLevel", "inherited");
 
-    if (minAlertLevel !== "") {
+    if (minAlertLevel !== "inherited") {
         command = command.concat(["--minAlertLevel", minAlertLevel]);
     }
 

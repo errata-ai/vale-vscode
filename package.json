@@ -129,8 +129,19 @@
 				"vale.valeCLI.minAlertLevel": {
 					"scope": "resource",
 					"type": "string",
-					"default": null,
-					"markdownDescription": "Sets the minimum alert level to display. This takes precedence over the value set in a configuration file."
+					"default": "inherited",
+					"enum": [
+						"inherited",
+						"suggestion",
+						"warning",
+						"error"
+					],
+					"markdownEnumDescriptions": [
+						"Inherits the `minAlertLevel` from the active configuration file.",
+						"Sets `minAlertLevel` to `suggestion`, overriding any configuration files.",
+						"Sets `minAlertLevel` to `warning`, overriding any configuration files.",
+						"Sets `minAlertLevel` to `error`, overriding any configuration files."
+					]
 				},
 
 				"vale-server.serverURL": {
