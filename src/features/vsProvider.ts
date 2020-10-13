@@ -100,7 +100,6 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
           configLocation,
           file.fileName);
 
-        console.log("running", command);
         const stdout = await utils.runInWorkspace(folder, command);
         this.handleJSON(stdout.toString(), file, 0);
         } catch (error) {
@@ -108,7 +107,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
           //
           // TODO: in case (2), how do we unintrusively communicate that we
           // couldn't find a config file?
-          console.log("[Vale] could't find a .vale.ini file; skipping lint.");
+          console.log(`[Vale] runtime error: ${error}`);
         }
     }
 
