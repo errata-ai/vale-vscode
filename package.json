@@ -126,7 +126,12 @@
 					"default": null,
 					"markdownDescription": "Absolute path to the Vale binary. The predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable can be used to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)"
 				},
-
+				"vale.valeCLI.minAlertLevel": {
+					"scope": "resource",
+					"type": "string",
+					"default": null,
+					"markdownDescription": "Sets the minimum alert level to display. This takes precedence over the value set in a configuration file."
+				},
 
 				"vale-server.serverURL": {
 					"type": "string",

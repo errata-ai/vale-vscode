@@ -261,13 +261,22 @@ export const buildCommand = (
   exe: string,
   config: string,
   path: string
-): ReadonlyArray<string> => {
-  const command: ReadonlyArray<string> = [exe, "--no-exit"];
-  if (config !== "") {
-    command.concat(["--config", config]);
-  }
+): Array<string> => {
+    const configuration = vscode.workspace.getConfiguration();
 
-  command.concat(["--output", "JSON", path]);
-  return command;
+    let command: Array<string> = [exe, "--no-exit"];
+    if (config !== "") {
+        command = command.concat(["--config", config]);
+    }
+
+    let minAlertLevel: string = configuration.get<string>(
+        "vale.valeCLI.minAlertLevel", "");
+
+    if (minAlertLevel !== "") {
+        command = command.concat(["--minAlertLevel", minAlertLevel]);
+    }
+
+    command = command.concat(["--output", "JSON", path]);
+    return command;
 };
 

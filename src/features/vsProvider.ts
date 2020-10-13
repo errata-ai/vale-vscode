@@ -100,6 +100,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
           configLocation,
           file.fileName);
 
+        console.log("running", command);
         const stdout = await utils.runInWorkspace(folder, command);
         this.handleJSON(stdout.toString(), file, 0);
         } catch (error) {
