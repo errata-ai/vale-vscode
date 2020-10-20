@@ -107,3 +107,5 @@ The extension offers a number of settings and configuration options (_Preference
       "vale.valeCLI.path": "/some/path/to/vale"
     }
     ```
+
+- `vale.valeCLI.minAlertLevel` (default: `inherited`): Defines from which level of errors and above to display in the problems output.
