@@ -1,12 +1,12 @@
-'use strict';
+"use strict";
 
-import * as path from 'path';
-import * as fs from 'fs';
-import * as request from 'request-promise-native';
-import * as vscode from 'vscode';
+import * as path from "path";
+import * as fs from "fs";
+import * as request from "request-promise-native";
+import * as vscode from "vscode";
 
-import InitCommands from './vsCommands';
-import * as utils from './vsUtils';
+import InitCommands from "./vsCommands";
+import * as utils from "./vsUtils";
 
 export default class ValeServerProvider implements vscode.CodeActionProvider {
   private diagnosticCollection!: vscode.DiagnosticCollection;
@@ -16,7 +16,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   private stylesPath!: string;
   private useCLI!: boolean;
 
-  private static commandId: string = 'ValeServerProvider.runCodeAction';
+  private static commandId: string = "ValeServerProvider.runCodeAction";
   private command!: vscode.Disposable;
 
   private async doVale(textDocument: vscode.TextDocument) {
@@ -27,11 +27,11 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
     // Reset out alert map:
     this.alertMap = {};
-    this.useCLI = configuration.get('vale.core.useCLI', false);
+    this.useCLI = configuration.get("vale.core.useCLI", false);
 
     if (!this.useCLI) {
       // We're using Vale Server ...
-      const limit = configuration.get('vale.server.lintContext', 0);
+      const limit = configuration.get("vale.server.lintContext", 0);
 
       let response: string = "";
       if (limit < 0 || (limit > 0 && textDocument.lineCount >= limit)) {
@@ -71,48 +71,48 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     // because the user may simply be editing a non-Vale project/file.
     let stylesPath: Array<string> = [];
     if (configLocation !== "" && !fs.existsSync(configLocation)) {
-        vscode.window.showErrorMessage(
-          `There was an error running Vale: '${configLocation}' does not exist.`
-        );
+      vscode.window.showErrorMessage(
+        `There was an error running Vale: '${configLocation}' does not exist.`
+      );
     } else if (configLocation !== "") {
       stylesPath = [
-          binaryLocation,
-          "--no-exit",
-          "--config",
-          configLocation,
-          "ls-config"
-        ];
+        binaryLocation,
+        "--no-exit",
+        "--config",
+        configLocation,
+        "ls-config",
+      ];
     } else {
-      stylesPath = [
-          binaryLocation,
-          "--no-exit",
-          "ls-config"
-        ];
-      }
-
-      const configOut = await utils.runInWorkspace(folder, stylesPath);
-      try {
-        const configCLI = JSON.parse(configOut);
-
-        this.stylesPath = configCLI.StylesPath;
-        const command = utils.buildCommand(
-          binaryLocation,
-          configLocation,
-          file.fileName);
-
-        const stdout = await utils.runInWorkspace(folder, command);
-        this.handleJSON(stdout.toString(), file, 0);
-        } catch (error) {
-          // We can't find a configuration, but this might not be an error:
-          //
-          // TODO: in case (2), how do we unintrusively communicate that we
-          // couldn't find a config file?
-          console.log(`[Vale] runtime error: ${error}`);
-        }
+      stylesPath = [binaryLocation, "--no-exit", "ls-config"];
     }
 
+    const configOut = await utils.runInWorkspace(folder, stylesPath);
+    try {
+      const configCLI = JSON.parse(configOut);
 
-  private handleJSON(contents: string, doc: vscode.TextDocument, offset: number) {
+      this.stylesPath = configCLI.StylesPath;
+      const command = utils.buildCommand(
+        binaryLocation,
+        configLocation,
+        file.fileName
+      );
+
+      const stdout = await utils.runInWorkspace(folder, command);
+      this.handleJSON(stdout.toString(), file, 0);
+    } catch (error) {
+      // We can't find a configuration, but this might not be an error:
+      //
+      // TODO: in case (2), how do we unintrusively communicate that we
+      // couldn't find a config file?
+      console.log(`[Vale] runtime error: ${error}`);
+    }
+  }
+
+  private handleJSON(
+    contents: string,
+    doc: vscode.TextDocument,
+    offset: number
+  ) {
     const diagnostics: vscode.Diagnostic[] = [];
     let body = JSON.parse(contents.toString());
     const backend = this.useCLI ? "Vale" : "Vale Server";
@@ -126,7 +126,11 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
           this.updateStatusBarItem(readabilityMessage);
         } else {
           let diagnostic = utils.toDiagnostic(
-            alerts[i], this.stylesPath, backend, offset);
+            alerts[i],
+            this.stylesPath,
+            backend,
+            offset
+          );
 
           let key = `${diagnostic.message}-${diagnostic.range}`;
           this.alertMap[key] = alerts[i];
@@ -149,7 +153,8 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     document: vscode.TextDocument,
     range: vscode.Range,
     context: vscode.CodeActionContext,
-    token: vscode.CancellationToken): Promise<vscode.CodeAction[]> {
+    token: vscode.CancellationToken
+  ): Promise<vscode.CodeAction[]> {
     let diagnostic: vscode.Diagnostic = context.diagnostics[0];
     let actions: vscode.CodeAction[] = [];
 
@@ -160,26 +165,27 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     let key = `${diagnostic.message}-${diagnostic.range}`;
     let alert = this.alertMap[key];
 
-    let server: string = vscode.workspace.getConfiguration().get(
-      'vale.server.serverURL',
-      'http://localhost:7777'
-    );
+    let server: string = vscode.workspace
+      .getConfiguration()
+      .get("vale.server.serverURL", "http://localhost:7777");
 
     await request
       .post({
-        uri: server + '/suggest',
+        uri: server + "/suggest",
         qs: { alert: JSON.stringify(alert) },
-        json: true
+        json: true,
       })
       .catch((error) => {
         return Promise.reject(`Vale Server could not connect: ${error}.`);
       })
       .then((body) => {
-        for (let idx in body['suggestions']) {
-          const suggestion = body['suggestions'][idx];
+        for (let idx in body["suggestions"]) {
+          const suggestion = body["suggestions"][idx];
           const title = utils.toTitle(alert, suggestion);
-          const action =
-            new vscode.CodeAction(title, vscode.CodeActionKind.QuickFix);
+          const action = new vscode.CodeAction(
+            title,
+            vscode.CodeActionKind.QuickFix
+          );
 
           action.command = {
             title: title,
@@ -189,8 +195,8 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
               diagnostic,
               alert.Match,
               suggestion,
-              alert.Action.Name
-            ]
+              alert.Action.Name,
+            ],
           };
 
           actions.push(action);
@@ -201,14 +207,19 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   }
 
   private runCodeAction(
-    document: vscode.TextDocument, diagnostic: vscode.Diagnostic,
-    error: string, suggestion: string, action: string): any {
+    document: vscode.TextDocument,
+    diagnostic: vscode.Diagnostic,
+    error: string,
+    suggestion: string,
+    action: string
+  ): any {
     let docError: string = document.getText(diagnostic.range);
 
     if (error === docError) {
       // Remove diagnostic from list
-      let diagnostics: vscode.Diagnostic[] =
-        this.diagnosticMap[document.uri.toString()];
+      let diagnostics: vscode.Diagnostic[] = this.diagnosticMap[
+        document.uri.toString()
+      ];
       let index: number = diagnostics.indexOf(diagnostic);
 
       diagnostics.splice(index, 1);
@@ -219,21 +230,25 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
       // Insert the new text
       let edit = new vscode.WorkspaceEdit();
-      if (action !== 'remove') {
+      if (action !== "remove") {
         edit.replace(document.uri, diagnostic.range, suggestion);
       } else {
         // NOTE: we need to add a character when deleting to avoid leaving a
         // double space.
         const range = new vscode.Range(
-          diagnostic.range.start.line, diagnostic.range.start.character,
-          diagnostic.range.end.line, diagnostic.range.end.character + 1);
+          diagnostic.range.start.line,
+          diagnostic.range.start.character,
+          diagnostic.range.end.line,
+          diagnostic.range.end.character + 1
+        );
         edit.delete(document.uri, range);
       }
 
       return vscode.workspace.applyEdit(edit);
     } else {
       vscode.window.showErrorMessage(
-        'The suggestion was not applied because it is out of date.');
+        "The suggestion was not applied because it is out of date."
+      );
       console.log(error, docError);
     }
   }
@@ -248,23 +263,33 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     );
     subscriptions.push(this);
 
-    this.readabilityStatus = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+    this.readabilityStatus = vscode.window.createStatusBarItem(
+      vscode.StatusBarAlignment.Left,
+      100
+    );
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection();
 
-    this.useCLI = configuration.get('vale.core.useCLI', false);
+    this.useCLI = configuration.get("vale.core.useCLI", false);
     if (!this.useCLI) {
       this.stylesPath = await utils.getStylesPath();
     }
 
     vscode.workspace.onDidOpenTextDocument(this.doVale, this, subscriptions);
-    vscode.workspace.onDidCloseTextDocument((textDocument) => {
-      this.diagnosticCollection.delete(textDocument.uri);
-    }, null, subscriptions);
+    vscode.workspace.onDidCloseTextDocument(
+      (textDocument) => {
+        this.diagnosticCollection.delete(textDocument.uri);
+      },
+      null,
+      subscriptions
+    );
 
     vscode.workspace.onDidSaveTextDocument(this.doVale, this);
     vscode.workspace.textDocuments.forEach(this.doVale, this);
 
-    vscode.languages.registerCodeActionsProvider({ scheme: '*', language: '*' }, this);
+    vscode.languages.registerCodeActionsProvider(
+      { scheme: "*", language: "*" },
+      this
+    );
 
     InitCommands(subscriptions);
   }
