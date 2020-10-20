@@ -75,7 +75,6 @@
 					"category": "Vale",
 					"when": "!config.vale.core.useCLI"
 				},
-
 				{
 					"command": "vale.addToAccept",
 					"category": "Vale",
@@ -97,7 +96,6 @@
 					"default": false,
 					"markdownDescription": "Use Vale's CLI instead of Vale Server. (**NOTE**: Some features, such as [Quick Fixes](https://github.com/errata-ai/vale-vscode/pull/4) and [Vocab Management](https://github.com/errata-ai/vale-vscode/pull/4), are only available when using Vale Server.)"
 				},
-
 				"vale.server.serverURL": {
 					"type": "string",
 					"default": "http://127.0.0.1:7777",
@@ -113,7 +111,6 @@
 					"default": 0,
 					"markdownDescription": "Only lint the *active* portion of a document (as determined by the cursor position), allowing for efficient on-the-fly linting of large documents. There are three supported values: `-1` (applies to all files), `0` (disabled), `n` (applies to any file with `lines >= n`)."
 				},
-
 				"vale.valeCLI.config": {
 					"scope": "resource",
 					"type": "string",
@@ -126,8 +123,24 @@
 					"default": null,
 					"markdownDescription": "Absolute path to the Vale binary. The predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable can be used to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)"
 				},
-
-
+				"vale.valeCLI.minAlertLevel": {
+					"scope": "resource",
+					"type": "string",
+					"default": "inherited",
+					"enum": [
+						"inherited",
+						"suggestion",
+						"warning",
+						"error"
+					],
+					"markdownEnumDescriptions": [
+						"Inherits the `minAlertLevel` from the active configuration file.",
+						"Sets `minAlertLevel` to `suggestion`, overriding any configuration files.",
+						"Sets `minAlertLevel` to `warning`, overriding any configuration files.",
+						"Sets `minAlertLevel` to `error`, overriding any configuration files."
+					],
+					"markdownDescription": "Defines from which level of errors and above to display in the problems output."
+				},
 				"vale-server.serverURL": {
 					"type": "string",
 					"default": "http://127.0.0.1:7777",
