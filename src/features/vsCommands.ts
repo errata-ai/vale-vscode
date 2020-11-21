@@ -17,9 +17,27 @@ export default function InitCommands(subscriptions: vscode.Disposable[]) {
     vscode.commands.registerCommand("vale.addToReject", addToReject),
 
     vscode.commands.registerCommand("vale.openAccept", openAccept),
-    vscode.commands.registerCommand("vale.openReject", openReject)
+    vscode.commands.registerCommand("vale.openReject", openReject),
+
+    vscode.commands.registerCommand("vale.doSummary", doSummary)
   );
 }
+
+const doSummary = async () => {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    return;
+  }
+
+  let server: string = vscode.workspace
+    .getConfiguration()
+    .get("vale.server.serverURL", "http://localhost:7777");
+
+  let name = path.dirname(editor.document.fileName);
+  let link = server + `/summary.html?path=${name}`;
+
+  vscode.env.openExternal(vscode.Uri.parse(link));
+};
 
 const addToAccept = async () => {
   await addToVocab("accept");
