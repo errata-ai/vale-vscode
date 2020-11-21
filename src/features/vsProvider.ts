@@ -18,6 +18,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
   private static commandId: string = "ValeServerProvider.runCodeAction";
   private command!: vscode.Disposable;
+  private logger!: vscode.OutputChannel;
 
   private async doVale(textDocument: vscode.TextDocument) {
     const configuration = vscode.workspace.getConfiguration();
@@ -25,8 +26,10 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       return;
     }
 
-    // Reset out alert map:
+    // Reset out alert map and run-time log:
     this.alertMap = {};
+    this.logger.clear();
+
     this.useCLI = configuration.get("vale.core.useCLI", false);
 
     if (!this.useCLI) {
@@ -72,7 +75,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     let stylesPath: Array<string> = [];
     if (configLocation !== "" && !fs.existsSync(configLocation)) {
       vscode.window.showErrorMessage(
-        `There was an error running Vale: '${configLocation}' does not exist.`
+        `[Vale]: '${configLocation}' does not exist.`
       );
     } else if (configLocation !== "") {
       stylesPath = [
@@ -100,11 +103,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       const stdout = await utils.runInWorkspace(folder, command);
       this.handleJSON(stdout.toString(), file, 0);
     } catch (error) {
-      // We can't find a configuration, but this might not be an error:
-      //
-      // TODO: in case (2), how do we unintrusively communicate that we
-      // couldn't find a config file?
-      console.log(`[Vale] runtime error: ${error}`);
+      vscode.window.showErrorMessage(`[Vale]: ${error}`);
     }
   }
 
@@ -114,8 +113,13 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     offset: number
   ) {
     const diagnostics: vscode.Diagnostic[] = [];
-    let body = JSON.parse(contents.toString());
     const backend = this.useCLI ? "Vale" : "Vale Server";
+
+    let body = JSON.parse(contents.toString());
+    if (body.Code && body.Text) {
+      this.logger.appendLine(body.Text);
+      return;
+    }
 
     this.readabilityStatus.hide();
     for (let key in body) {
@@ -254,8 +258,9 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   }
 
   public async activate(subscriptions: vscode.Disposable[]) {
-    const configuration = vscode.workspace.getConfiguration();
+    this.logger = vscode.window.createOutputChannel("Vale");
 
+    const configuration = vscode.workspace.getConfiguration();
     this.command = vscode.commands.registerCommand(
       ValeServerProvider.commandId,
       this.runCodeAction,
@@ -303,5 +308,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
     this.diagnosticMap = {};
     this.alertMap = {};
+
+    this.logger.dispose();
   }
 }

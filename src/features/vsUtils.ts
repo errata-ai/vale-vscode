@@ -152,8 +152,12 @@ export const runInWorkspace = (
       command[0],
       command.slice(1),
       { cwd, maxBuffer },
-      (error, stdout) => {
-        resolve(stdout);
+      (error, stdout, stderr) => {
+        if (error) {
+          resolve(stderr);
+        } else {
+          resolve(stdout);
+        }
       }
     );
   });
