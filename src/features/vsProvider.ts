@@ -118,6 +118,9 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     let body = JSON.parse(contents.toString());
     if (body.Code && body.Text) {
       this.logger.appendLine(body.Text);
+      if (body.Path) {
+        this.logger.appendLine(body.Path);
+      }
       return;
     }
 
