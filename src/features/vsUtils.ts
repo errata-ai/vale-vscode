@@ -115,7 +115,15 @@ export const toDiagnostic = (
   );
 
   diagnostic.source = backend;
-  diagnostic.code = alert.Check;
+
+  if (alert.Link.length > 0) {
+    diagnostic.code = {
+      value: alert.Check,
+      target: vscode.Uri.parse(alert.Link)
+    };
+  } else {
+    diagnostic.code = alert.Check;
+  }
 
   const name = alert.Check.split(".");
   const rule = vscode.Uri.file(path.join(styles, name[0], name[1] + ".yml"));
