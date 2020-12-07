@@ -47,7 +47,12 @@
 				"command": "vale.openReject",
 				"category": "Vale",
 				"title": "Open Vocab File (reject)"
-			}
+      },
+      {
+        "command": "vale.doSummary",
+        "category": "Vale",
+        "title": "View Folder Report"
+      }
 		],
 		"menus": {
 			"editor/context": [
@@ -74,7 +79,12 @@
 					"command": "vale.openReject",
 					"category": "Vale",
 					"when": "!config.vale.core.useCLI"
-				},
+        },
+        {
+          "command": "vale.doSummary",
+          "category": "Vale",
+          "when": "!config.vale.core.useCLI"
+        },
 				{
 					"command": "vale.addToAccept",
 					"category": "Vale",
