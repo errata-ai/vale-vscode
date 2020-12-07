@@ -68,6 +68,10 @@ Add words and phrases to your active Vocab through the in-editor context menu.
 
 Jump to your active Vocab files directly from the Command Palette.
 
+### Folder Reports (Vale Server only)
+
+Use the `Vale: View Folder Report` command to generate a [report for the active folder](https://docs.errata.ai/vale-server/gui#summary).
+
 ## Settings
 
 The extension offers a number of settings and configuration options (_Preferences > Extensions > Vale_), which are split into three groups: `Vale > Core` (Vale and Vale Server), `Vale > Server` (Vale Server only), and `Vale > Vale CLI` (Vale only).
