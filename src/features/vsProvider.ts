@@ -80,13 +80,13 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     } else if (configLocation !== "") {
       stylesPath = [
         binaryLocation,
-        "--no-exit",
+        "--output=JSON",
         "--config",
         configLocation,
         "ls-config",
       ];
     } else {
-      stylesPath = [binaryLocation, "--no-exit", "ls-config"];
+      stylesPath = [binaryLocation, "--output=JSON", "ls-config"];
     }
 
     const configOut = await utils.runInWorkspace(folder, stylesPath);
@@ -103,7 +103,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       const stdout = await utils.runInWorkspace(folder, command);
       this.handleJSON(stdout.toString(), file, 0);
     } catch (error) {
-      vscode.window.showErrorMessage(`[Vale]: ${error}`);
+      this.logger.appendLine(error);
     }
   }
 
@@ -114,7 +114,6 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   ) {
     const diagnostics: vscode.Diagnostic[] = [];
     const backend = this.useCLI ? "Vale" : "Vale Server";
-
     let body = JSON.parse(contents.toString());
     if (body.Code && body.Text) {
       this.logger.appendLine(body.Text);
