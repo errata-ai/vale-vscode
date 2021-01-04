@@ -8,7 +8,7 @@ import * as vscode from "vscode";
 
 // If `customPath` contains `${workspaceFolder}`, replaces it with the workspace that `file` comes from.
 // Return `null` if `customPath` contains `${workspaceFolder}` and `file` is _not_ part of the workspace.
-function replaceWorkspaceFolder(customPath: string, file: vscode.TextDocument): string | null {
+function replaceWorkspaceFolder(logger: vscode.OutputChannel, customPath: string, file: vscode.TextDocument): string | null {
   customPath = path.normalize(customPath);
   const workspaceFolder = vscode.workspace.getWorkspaceFolder(file.uri);
   if (workspaceFolder) {
@@ -17,25 +17,26 @@ function replaceWorkspaceFolder(customPath: string, file: vscode.TextDocument): 
       workspaceFolder.uri.fsPath
     );
   }
+  logger.appendLine(`Not running Vale on file '${file.uri}' as it is not contained within the workspace`);
   return null;
 }
 
-export const readBinaryLocation = (file: vscode.TextDocument): string | null => {
+export const readBinaryLocation = (logger: vscode.OutputChannel, file: vscode.TextDocument): string | null => {
   const configuration = vscode.workspace.getConfiguration();
 
   let customBinaryPath = configuration.get<string>("vale.valeCLI.path");
   if (customBinaryPath) {
-    return replaceWorkspaceFolder(customBinaryPath, file);
+    return replaceWorkspaceFolder(logger, customBinaryPath, file);
   }
   return which.sync("vale");
 };
 
-export const readFileLocation = (file: vscode.TextDocument): string | null => {
+export const readFileLocation = (logger: vscode.OutputChannel, file: vscode.TextDocument): string | null => {
   const configuration = vscode.workspace.getConfiguration();
 
   let customConfigPath = configuration.get<string>("vale.valeCLI.config");
   if (customConfigPath) {
-    return replaceWorkspaceFolder(customConfigPath, file);
+    return replaceWorkspaceFolder(logger, customConfigPath, file);
   }
   return "";
 };

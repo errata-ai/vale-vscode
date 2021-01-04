@@ -62,8 +62,8 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   private async runVale(file: vscode.TextDocument) {
     const folder = path.dirname(file.fileName);
 
-    const binaryLocation = utils.readBinaryLocation(file);
-    const configLocation = utils.readFileLocation(file);
+    const binaryLocation = utils.readBinaryLocation(this.logger, file);
+    const configLocation = utils.readFileLocation(this.logger, file);
     if (binaryLocation == null || configLocation == null) {
       // `file` is not part of the workspace, so we could not resolve a workspace-relative path. Ignore this file.
       return;
