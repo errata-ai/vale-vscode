@@ -47,12 +47,12 @@
 				"command": "vale.openReject",
 				"category": "Vale",
 				"title": "Open Vocab File (reject)"
-      },
-      {
-        "command": "vale.doSummary",
-        "category": "Vale",
-        "title": "View Folder Report"
-      }
+			},
+			{
+				"command": "vale.doSummary",
+				"category": "Vale",
+				"title": "View Folder Report"
+			}
 		],
 		"menus": {
 			"editor/context": [
@@ -79,12 +79,12 @@
 					"command": "vale.openReject",
 					"category": "Vale",
 					"when": "!config.vale.core.useCLI"
-        },
-        {
-          "command": "vale.doSummary",
-          "category": "Vale",
-          "when": "!config.vale.core.useCLI"
-        },
+				},
+				{
+					"command": "vale.doSummary",
+					"category": "Vale",
+					"when": "!config.vale.core.useCLI"
+				},
 				{
 					"command": "vale.addToAccept",
 					"category": "Vale",
@@ -173,18 +173,18 @@
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.1",
-		"@types/mocha": "^5.2.6",
+		"@types/mocha": "^9.0.0",
 		"@types/node": "^10.12.21",
-		"@types/vscode": "^1.43.0",
+		"@types/vscode": "^1.59.0",
 		"@types/which": "^1.3",
 		"glob": "^7.1.4",
-		"mocha": "^6.1.4",
+		"mocha": "^9.1.0",
 		"ts-loader": "^6.1.2",
 		"tslint": "^5.12.1",
-		"typescript": "^3.3.1",
-		"vscode-test": "^1.0.0-next.0",
-		"webpack": "^4.40.2",
-		"webpack-cli": "^3.3.9"
+		"typescript": "^4.3.5",
+		"vscode-test": "^1.6.1",
+		"webpack": "^5.51.1",
+		"webpack-cli": "^4.8.0"
 	},
 	"dependencies": {
 		"@types/request-promise-native": "^1.0.16",

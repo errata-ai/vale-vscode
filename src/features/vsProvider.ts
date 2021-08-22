@@ -64,7 +64,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
     const binaryLocation = utils.readBinaryLocation(this.logger, file);
     const configLocation = utils.readFileLocation(this.logger, file);
-    if (binaryLocation == null || configLocation == null) {
+    if (binaryLocation === null || configLocation === null) {
       // `file` is not part of the workspace, so we could not resolve a workspace-relative path. Ignore this file.
       return;
     }
