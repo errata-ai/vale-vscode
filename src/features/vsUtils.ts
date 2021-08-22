@@ -2,7 +2,7 @@ import * as path from "path";
 import * as which from "which";
 import * as fs from "fs";
 import * as request from "request-promise-native";
-import { execFile } from "child_process";
+import { execFile, ChildProcess } from "child_process";
 
 import * as vscode from "vscode";
 

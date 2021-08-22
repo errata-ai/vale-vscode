@@ -4,6 +4,7 @@ import * as path from "path";
 import * as fs from "fs";
 import * as request from "request-promise-native";
 import * as vscode from "vscode";
+import { execFile, ChildProcess } from "child_process";
 
 import InitCommands from "./vsCommands";
 import * as utils from "./vsUtils";
@@ -19,6 +20,11 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   private static commandId: string = "ValeServerProvider.runCodeAction";
   private command!: vscode.Disposable;
   private logger!: vscode.OutputChannel;
+  private nlpServer!: ChildProcess;
+
+  private async startNLP(): Promise<ChildProcess> {
+    return execFile("nlpapi");
+  }
 
   private async doVale(textDocument: vscode.TextDocument) {
     const configuration = vscode.workspace.getConfiguration();
@@ -26,10 +32,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       return;
     }
 
-    // Reset out alert map and run-time log:
     this.alertMap = {};
-    this.logger.clear();
-
     this.useCLI = configuration.get("vale.core.useCLI", false);
 
     if (!this.useCLI) {
@@ -267,6 +270,14 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
   public async activate(subscriptions: vscode.Disposable[]) {
     this.logger = vscode.window.createOutputChannel("Vale");
 
+    this.nlpServer = await this.startNLP();
+    if (this.nlpServer.pid) {
+      this.logger.appendLine("Successfully started NLP server on port 8000!")
+    } else {
+      this.logger.appendLine("Failed to start NLP server on port 8000.");
+      this.logger.appendLine("You may need to run `pip3 install nlpapi`.");
+    }
+
     const configuration = vscode.workspace.getConfiguration();
     this.command = vscode.commands.registerCommand(
       ValeServerProvider.commandId,
@@ -317,5 +328,6 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     this.alertMap = {};
 
     this.logger.dispose();
+    this.nlpServer.kill();
   }
 }
