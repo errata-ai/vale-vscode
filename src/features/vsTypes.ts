@@ -17,6 +17,14 @@ interface IValeActionJSON {
 }
 
 /**
+ * A CLI Config interface for pattern, config pairs From Vale.
+ */
+interface IValeCLIConfig {
+  readonly pattern: string;
+  readonly config: string;
+}
+
+/**
  * An Alert From Vale.
  */
 interface IValeErrorJSON {
