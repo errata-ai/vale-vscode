@@ -3,13 +3,20 @@ import * as which from "which";
 import * as fs from "fs";
 import * as request from "request-promise-native";
 import { execFile } from "child_process";
-
+import globToRegExp from "glob-to-regexp";
 import * as vscode from "vscode";
+
+const resolveFileLocation = (logger: vscode.OutputChannel, customPath: string, file: vscode.TextDocument): string | null => {
+  customPath = path.normalize(customPath);
+  if (!customPath.includes("${workspaceFolder}")) {
+    return customPath;
+  }
+  return replaceWorkspaceFolder(logger, customPath, file);
+};
 
 // If `customPath` contains `${workspaceFolder}`, replaces it with the workspace that `file` comes from.
 // Return `null` if `customPath` contains `${workspaceFolder}` and `file` is _not_ part of the workspace.
-function replaceWorkspaceFolder(logger: vscode.OutputChannel, customPath: string, file: vscode.TextDocument): string | null {
-  customPath = path.normalize(customPath);
+function replaceWorkspaceFolder(logger: vscode.OutputChannel, customPath: string, file: vscode.TextDocument): string | null {  
   const workspaceFolder = vscode.workspace.getWorkspaceFolder(file.uri);
   if (workspaceFolder) {
     return customPath.replace(
@@ -22,22 +29,41 @@ function replaceWorkspaceFolder(logger: vscode.OutputChannel, customPath: string
 }
 
 export const readBinaryLocation = (logger: vscode.OutputChannel, file: vscode.TextDocument): string | null => {
-  const configuration = vscode.workspace.getConfiguration();
-
+  const configuration = vscode.workspace.getConfiguration();  
   let customBinaryPath = configuration.get<string>("vale.valeCLI.path");
   if (customBinaryPath) {
-    return replaceWorkspaceFolder(logger, customBinaryPath, file);
+    return resolveFileLocation(logger, customBinaryPath, file);
   }
   return which.sync("vale");
 };
 
 export const readFileLocation = (logger: vscode.OutputChannel, file: vscode.TextDocument): string | null => {
   const configuration = vscode.workspace.getConfiguration();
-
-  let customConfigPath = configuration.get<string>("vale.valeCLI.config");
-  if (customConfigPath) {
-    return replaceWorkspaceFolder(logger, customConfigPath, file);
+  const multiConfigs = configuration.get<boolean>("vale.valeCLI.multipleConfigs");
+  if (multiConfigs) {
+    return readFileLocationFromPattern(logger, file, configuration);
   }
+  const customConfig = configuration.get<string>("vale.valeCLI.config");
+  if (customConfig) {
+    return resolveFileLocation(logger, customConfig, file);
+  }
+  return "";
+};
+
+const readFileLocationFromPattern = (logger: vscode.OutputChannel, file: vscode.TextDocument, configuration: vscode.WorkspaceConfiguration): string | null => {
+  const customConfigs = configuration.get<Array<IValeCLIConfig>>("vale.valeCLI.configs");
+  if (customConfigs && customConfigs.length !== 0) {    
+    for (let i = 0; i < customConfigs.length; i++) {
+      if (globToRegExp(customConfigs[i].pattern, { globstar: true }).test(file.uri.path)) {
+        logger.appendLine(`
+          "${file.uri.path}" did match the pattern: "${customConfigs[i].pattern}" 
+          linting it with the vale config at: "${customConfigs[i].config}"
+        `);
+        return resolveFileLocation(logger, customConfigs[i].config, file);
+      }
+    }    
+  }
+  logger.appendLine(`"${file.uri.path}" didn't match any of the given patterns`);
   return "";
 };
 
