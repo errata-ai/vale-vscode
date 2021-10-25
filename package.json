@@ -100,7 +100,7 @@
 		"configuration": {
 			"type": "object",
 			"title": "Vale",
-			"properties": {				
+			"properties": {
 				"vale.core.useCLI": {
 					"type": "boolean",
 					"default": false,
@@ -120,7 +120,7 @@
 					"type": "number",
 					"default": 0,
 					"markdownDescription": "Only lint the *active* portion of a document (as determined by the cursor position), allowing for efficient on-the-fly linting of large documents. There are three supported values: `-1` (applies to all files), `0` (disabled), `n` (applies to any file with `lines >= n`)."
-				},				
+				},
 				"vale.valeCLI.config": {
 					"scope": "resource",
 					"type": "string",
