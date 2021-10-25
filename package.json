@@ -100,7 +100,7 @@
 		"configuration": {
 			"type": "object",
 			"title": "Vale",
-			"properties": {
+			"properties": {				
 				"vale.core.useCLI": {
 					"type": "boolean",
 					"default": false,
@@ -120,7 +120,7 @@
 					"type": "number",
 					"default": 0,
 					"markdownDescription": "Only lint the *active* portion of a document (as determined by the cursor position), allowing for efficient on-the-fly linting of large documents. There are three supported values: `-1` (applies to all files), `0` (disabled), `n` (applies to any file with `lines >= n`)."
-				},
+				},				
 				"vale.valeCLI.config": {
 					"scope": "resource",
 					"type": "string",
@@ -131,6 +131,32 @@
 					"type": "boolean",
 					"default": false,
 					"description": "Switches between single vale config mode and a glob pattern based approach for multiple configs e.g. for different languages."
+				},
+				"vale.valeCLI.configs": {
+					"scope": "resource",
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"pattern": {
+								"type": "string",
+								"markdownDescription": "The pattern will be checked for the file, if it matches, the corresponding config will be used. E.g.\n```json\n**/doc/**/*\n```\n_or_\n```json\n**/en/**/*.rst\n```"
+							},
+							"config": {
+								"type": "string",
+								"pattern": "^[^\\*]*$",
+								"patternErrorMessage": "The path may not include asterisks.",
+								"markdownDescription": "The path to the config that shall be used if the pattern matches."
+							}
+						}
+					},
+					"default": [
+						{
+							"dir": "**/*",
+							"config": ""
+						}
+					],
+					"markdownDescription": "Allowing to bind config files to glob patterns which decide which config file is going to be used in the CLI option for the currently opened file.\nThe first matching `pattern` is used to determine which config to use for the file.\n"
 				},
 				"vale.valeCLI.path": {
 					"scope": "resource",
@@ -180,7 +206,7 @@
 		"@types/glob": "^7.1.1",
 		"@types/mocha": "^9.0.0",
 		"@types/node": "^10.12.21",
-		"@types/vscode": "^1.59.0",
+		"@types/vscode": "^1.61.0",
 		"@types/which": "^1.3",
 		"glob": "^7.1.4",
 		"mocha": "^9.1.0",
@@ -189,11 +215,13 @@
 		"typescript": "^4.3.5",
 		"vscode-test": "^1.6.1",
 		"webpack": "^5.51.1",
-		"webpack-cli": "^4.8.0"
+		"webpack-cli": "^4.9.1"
 	},
 	"dependencies": {
+		"@types/glob-to-regexp": "^0.4.1",
 		"@types/request-promise-native": "^1.0.16",
 		"fs": "0.0.1-security",
+		"glob-to-regexp": "0.4.1",
 		"request": "^2.88.0",
 		"request-promise-native": "^1.0.7",
 		"which": "^2.0.1"
