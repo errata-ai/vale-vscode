@@ -82,6 +82,8 @@ The extension offers a number of settings and configuration options (_Preference
 
 - `vale.server.provideFixes` (default: `true`): Offer solutions to alerts using the 'Quick Fix' button.
 
+  > **NOTE**: The fixes feature currently has an occasional issue when it reports that a "suggestion is out of date". We are working on a long-term fix, but in the meantime, saving the file fixes the issue.
+
 - `vale.server.lintContext` (default: `0`): Only lint the *active* portion of a document (as determined by the cursor position), allowing for efficient on-the-fly linting of large documents. There are three supported values: `-1` (applies to all files), `0` (disabled), `n` (applies to any file with `lines >= n`).
 
 - `vale.valeCLI.config` (default: `null`): Absolute path to a Vale configuration file. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference configuration file from a custom location. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.) If not specified, the extension uses the default search process (relative to the current file).
