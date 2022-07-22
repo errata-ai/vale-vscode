@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 
-import ValeServerProvider from "./features/vsProvider";
+import ValeProvider from "./features/vsProvider";
 
 export function activate(context: vscode.ExtensionContext) {
-  let linter = new ValeServerProvider();
+  let linter = new ValeProvider();
   linter.activate(context.subscriptions);
 }

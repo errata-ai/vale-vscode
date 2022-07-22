@@ -1,32 +1,16 @@
 # Vale + VS Code
 
-> The official Visual Studio Code extension for [Vale](https://github.com/errata-ai/vale) and [Vale Server](https://errata.ai/vale-server/).
+> The official Visual Studio Code extension for [Vale](https://github.com/errata-ai/vale).
 
 The Vale extension for VS Code provides customizable spelling, style, and grammar checking for a variety of markup formats (Markdown, AsciiDoc, reStructuredText, HTML, and DITA).
 
-As of **v0.10.0**, the extension supports both [Vale](https://github.com/errata-ai/vale) (the command-line tool) and [Vale Server](https://errata.ai/vale-server/) (the desktop application).
+As of **v0.15.0**, the extension drops support for [Vale Server](https://errata.ai/vale-server/) which has ceased development. Many of the features from Vale Server will find their way into the Vale CLI tool, and this extension.
 
 ## Installation
 
-> **NOTE**: While this extension supports both Vale CLI and Vale Server, many of the extension's more [advanced features](#features) (such as Quick Fixes and Vocabulary Management) are only available through Vale Server.
-
-### Using Vale Server
-
-1. Install [Vale Server](https://errata.ai/vale-server/);
-
-2. install `vale-vscode` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server); and
-
-3. restart VS Code (recommended).
-
-### Using Vale
-
 1. Install [Vale](https://docs.errata.ai/vale/install);
-
 2. install `vale-vscode` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server);
-
-3. set [`vale.core.useCLI`](#settings) to `true` in the extension settings (_Preferences > Extensions > Vale > Use CLI_); and
-
-4. restart VS Code (recommended).
+3. restart VS Code (recommended).
 
 ## Features
 
@@ -74,11 +58,9 @@ Use the `Vale: View Folder Report` command to generate a [report for the active 
 
 ## Settings
 
-The extension offers a number of settings and configuration options (_Preferences > Extensions > Vale_), which are split into three groups: `Vale > Core` (Vale and Vale Server), `Vale > Server` (Vale Server only), and `Vale > Vale CLI` (Vale only).
+The extension offers a number of settings and configuration options (_Preferences > Extensions > Vale_)..
 
-- `vale.core.useCLI` (default: `false`): Use Vale CLI instead of Vale Server.
-
-- `vale.server.serverURL` (default: `http://127.0.0.1:7777`): URL to your running Vale Server instance.
+<!-- TODO: Deprecating values and names -->
 
 - `vale.server.provideFixes` (default: `true`): Offer solutions to alerts using the 'Quick Fix' button.
 
