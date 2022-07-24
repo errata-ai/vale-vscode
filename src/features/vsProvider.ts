@@ -157,7 +157,8 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     console.log("A - ");
     console.log(alert);
 
-    const suggestion = alert.Action.Params[1];
+    // Handles remove and replace as remove doesn't really need anything
+    const suggestion = alert.Action.Params[0];
     console.log("sug");
     console.log(suggestion);
     const title = utils.toTitle(alert, suggestion as unknown as string);
