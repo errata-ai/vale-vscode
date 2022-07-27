@@ -209,27 +209,6 @@ export const findContext = (): IEditorContext => {
   return context;
 };
 
-// export const getStylesPath = async (): Promise<string> => {
-//   const configuration = vscode.workspace.getConfiguration();
-
-//   let path: string = "";
-//   let server: string = configuration.get(
-//     "vale.server.serverURL",
-//     "http://localhost:7777"
-//   );
-
-//   await request
-//     .get({ uri: server + "/path", json: true })
-//     .catch((error) => {
-//       throw new Error(`Vale Server could not connect: ${error}.`);
-//     })
-//     .then((body) => {
-//       path = body.path;
-//     });
-
-//   return path;
-// };
-
 export const buildCommand = (
   exe: string,
   config: string,

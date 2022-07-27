@@ -1,5 +1,5 @@
 {
-	"name": "vale",
+	"name": "vale-server",
 	"displayName": "Vale",
 	"icon": ".vscode/icon.png",
 	"description": "The official Visual Studio Code extension for Vale.",
@@ -27,108 +27,23 @@
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
-		"commands": [
-			{
-				"command": "vale.addToAccept",
-				"category": "Vale",
-				"title": "Add word to Vocab (accept)"
-			},
-			{
-				"command": "vale.addToReject",
-				"category": "Vale",
-				"title": "Add word to Vocab (reject)"
-			},
-			{
-				"command": "vale.openAccept",
-				"category": "Vale",
-				"title": "Open Vocab File (accept)"
-			},
-			{
-				"command": "vale.openReject",
-				"category": "Vale",
-				"title": "Open Vocab File (reject)"
-			},
-			{
-				"command": "vale.doSummary",
-				"category": "Vale",
-				"title": "View Folder Report"
-			}
-		],
-		"menus": {
-			"editor/context": [
-				{
-					"command": "vale.addToAccept",
-					"category": "Vale",
-					"when": "editorHasSelection && !config.vale.core.useCLI",
-					"group": "2_workspace"
-				},
-				{
-					"command": "vale.addToReject",
-					"category": "Vale",
-					"when": "editorHasSelection && !config.vale.core.useCLI",
-					"group": "2_workspace"
-				}
-			],
-			"commandPalette": [
-				{
-					"command": "vale.openAccept",
-					"category": "Vale",
-					"when": "!config.vale.core.useCLI"
-				},
-				{
-					"command": "vale.openReject",
-					"category": "Vale",
-					"when": "!config.vale.core.useCLI"
-				},
-				{
-					"command": "vale.doSummary",
-					"category": "Vale",
-					"when": "!config.vale.core.useCLI"
-				},
-				{
-					"command": "vale.addToAccept",
-					"category": "Vale",
-					"when": "false"
-				},
-				{
-					"command": "vale.addToReject",
-					"category": "Vale",
-					"when": "false"
-				}
-			]
-		},
 		"configuration": {
 			"type": "object",
 			"title": "Vale",
 			"properties": {
-				"vale.core.useCLI": {
-					"type": "boolean",
-					"default": false,
-					"markdownDescription": "Use Vale's CLI instead of Vale Server. (**NOTE**: Some features, such as [Quick Fixes](https://github.com/errata-ai/vale-vscode/pull/4) and [Vocab Management](https://github.com/errata-ai/vale-vscode/pull/4), are only available when using Vale Server.)"
-				},
-				"vale.server.provideFixes": {
-					"type": "boolean",
-					"default": true,
-					"description": "Offer solutions to alerts using the 'Quick Fix' button."
-				},
-				"vale.server.lintContext": {
-					"type": "number",
-					"default": 0,
-					"markdownDescription": "Only lint the *active* portion of a document (as determined by the cursor position), allowing for efficient on-the-fly linting of large documents. There are three supported values: `-1` (applies to all files), `0` (disabled), `n` (applies to any file with `lines >= n`)."
-				},
-				"vale.valeCLI.config": {
+				"vale.config": {
 					"scope": "resource",
 					"type": "string",
 					"default": null,
 					"description": "Absolute path to a Vale config file. If not specified, the default search process will be used (relative to the current file)."
 				},
-				"vale.valeCLI.path": {
+				"vale.path": {
 					"scope": "resource",
 					"type": "string",
 					"default": null,
 					"markdownDescription": "Absolute path to the Vale binary. The predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable can be used to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)"
 				},
-				"vale.valeCLI.minAlertLevel": {
+				"vale.minAlertLevel": {
 					"scope": "resource",
 					"type": "string",
 					"default": "inherited",
