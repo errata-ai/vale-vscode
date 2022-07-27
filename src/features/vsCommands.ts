@@ -1,33 +1,36 @@
-import * as vscode from "vscode";
+// TODO: Currently not needed, but will return, so leaving for now
 
-import * as path from "path";
+
+// import * as vscode from "vscode";
+
+// import * as path from "path";
 // import * as request from "request-promise-native";
 
 /**
  * An Alert From Vale.
  */
-interface IValeConfigJSON {
-  readonly Project: string;
-  readonly StylesPath: string;
-}
+// interface IValeConfigJSON {
+//   readonly Project: string;
+//   readonly StylesPath: string;
+// }
 
-export default function InitCommands(subscriptions: vscode.Disposable[]) {
-  subscriptions.push(
-    // vscode.commands.registerCommand("vale.addToAccept", addToAccept),
-    // vscode.commands.registerCommand("vale.addToReject", addToReject),
+// export default function InitCommands(subscriptions: vscode.Disposable[]) {
+//   subscriptions.push(
+//     // vscode.commands.registerCommand("vale.addToAccept", addToAccept),
+//     // vscode.commands.registerCommand("vale.addToReject", addToReject),
 
-    // vscode.commands.registerCommand("vale.openAccept", openAccept),
-    // vscode.commands.registerCommand("vale.openReject", openReject),
+//     // vscode.commands.registerCommand("vale.openAccept", openAccept),
+//     // vscode.commands.registerCommand("vale.openReject", openReject),
 
-    vscode.commands.registerCommand("vale.doSummary", doSummary)
-  );
-}
+//     vscode.commands.registerCommand("vale.doSummary", doSummary)
+//   );
+// }
 
-const doSummary = async () => {
-  const editor = vscode.window.activeTextEditor;
-  if (!editor) {
-    return;
-  }
+// const doSummary = async () => {
+//   const editor = vscode.window.activeTextEditor;
+//   if (!editor) {
+//     return;
+//   }
 
   // let server: string = vscode.workspace
   //   .getConfiguration()

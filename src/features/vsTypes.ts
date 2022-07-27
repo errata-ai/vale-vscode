@@ -30,17 +30,3 @@ interface IValeErrorJSON {
   readonly Span: [number, number];
   readonly Severity: ValeSeverity;
 }
-
-// type Fixer
-// const fixers: Map<string, string> = new Map([
-//   ['name', 'Tom'],
-//   ['country', 'Chile'],
-// ]);
-
-// var fixers = map[string]fixer{
-// 	"suggest": suggest,
-// 	"replace": replace,
-// 	"remove":  remove,
-// 	"convert": convert,
-// 	"edit":    edit,
-// }

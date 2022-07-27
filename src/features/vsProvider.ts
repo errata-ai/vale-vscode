@@ -4,7 +4,6 @@ import * as path from "path";
 import * as fs from "fs";
 import * as vscode from "vscode";
 
-// import InitCommands from "./vsCommands";
 import * as utils from "./vsUtils";
 
 export default class ValeProvider implements vscode.CodeActionProvider {
@@ -13,7 +12,6 @@ export default class ValeProvider implements vscode.CodeActionProvider {
   private alertMap: Record<string, IValeErrorJSON> = {};
   private diagnosticMap: Record<string, vscode.Diagnostic[]> = {};
   private stylesPath!: string;
-  private useCLI!: boolean;
 
   private static commandId: string = "ValeProvider.runCodeAction";
   private command!: vscode.Disposable;
@@ -28,7 +26,6 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     // Reset out alert map and run-time log:
     this.alertMap = {};
     this.logger.clear();
-    // We're using the CLI ...
     try {
       await this.runVale(textDocument);
     } catch (error) {
@@ -139,7 +136,6 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     this.readabilityStatus.show();
   }
 
-  // TODO: Will any of this work?
   public async provideCodeActions(
     document: vscode.TextDocument,
     range: vscode.Range,
@@ -149,18 +145,12 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     let diagnostic: vscode.Diagnostic = context.diagnostics[0];
     let actions: vscode.CodeAction[] = [];
 
-    // if (diagnostic === undefined || this.useCLI) {
-    //   return actions;
-    // }
     let key = `${diagnostic.message}-${diagnostic.range}`;
     let alert = this.alertMap[key];
-    console.log("A - ");
-    console.log(alert);
 
     // Handles remove and replace as remove doesn't really need anything
+    // TODO: Handle spelling
     const suggestion = alert.Action.Params[0];
-    console.log("sug");
-    console.log(suggestion);
     const title = utils.toTitle(alert, suggestion as unknown as string);
     const action = new vscode.CodeAction(title, vscode.CodeActionKind.QuickFix);
 
@@ -175,50 +165,9 @@ export default class ValeProvider implements vscode.CodeActionProvider {
         alert.Action.Name,
       ],
     };
-    console.log("ACT - ");
-    console.log(action);
+
     actions.push(action);
     return actions;
-
-    // let server: string = vscode.workspace
-    //   .getConfiguration()
-    //   .get("vale.server.serverURL", "http://localhost:7777");
-
-    // await request
-    //   .post({
-    //     uri: server + "/suggest",
-    //     qs: { alert: JSON.stringify(alert) },
-    //     json: true,
-    //   })
-    //   .catch((error) => {
-    //     return Promise.reject(`Vale Server could not connect: ${error}.`);
-    //   })
-    //   .then((body) => {
-    //     for (let idx in body["suggestions"]) {
-    //       const suggestion = body["suggestions"][idx];
-    //       const title = utils.toTitle(alert, suggestion);
-    //       const action = new vscode.CodeAction(
-    //         title,
-    //         vscode.CodeActionKind.QuickFix
-    //       );
-
-    //       action.command = {
-    //         title: title,
-    //         command: ValeProvider.commandId,
-    //         arguments: [
-    //           document,
-    //           diagnostic,
-    //           alert.Match,
-    //           suggestion,
-    //           alert.Action.Name,
-    //         ],
-    //       };
-
-    //       actions.push(action);
-    //     }
-    //   });
-
-    // return actions;
   }
 
   private runCodeAction(
@@ -284,11 +233,6 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     );
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection();
 
-    // this.useCLI = configuration.get("vale.core.useCLI", false);
-    // if (!this.useCLI) {
-    //   this.stylesPath = await utils.getStylesPath();
-    // }
-
     vscode.workspace.onDidOpenTextDocument(this.doVale, this, subscriptions);
     vscode.workspace.onDidCloseTextDocument(
       (textDocument) => {
@@ -305,8 +249,6 @@ export default class ValeProvider implements vscode.CodeActionProvider {
       { scheme: "*", language: "*" },
       this
     );
-
-    // InitCommands(subscriptions);
   }
 
   public dispose(): void {
