@@ -1,32 +1,16 @@
 # Vale + VS Code
 
-> The official Visual Studio Code extension for [Vale](https://github.com/errata-ai/vale) and [Vale Server](https://errata.ai/vale-server/).
+> The official Visual Studio Code extension for [Vale](https://github.com/errata-ai/vale).
 
 The Vale extension for VS Code provides customizable spelling, style, and grammar checking for a variety of markup formats (Markdown, AsciiDoc, reStructuredText, HTML, and DITA).
 
-As of **v0.10.0**, the extension supports both [Vale](https://github.com/errata-ai/vale) (the command-line tool) and [Vale Server](https://errata.ai/vale-server/) (the desktop application).
+As of **v0.15.0**, the extension drops support for [Vale Server](https://errata.ai/vale-server/) which has ceased development. Many of the features from Vale Server will find their way into the Vale CLI tool, and this extension.
 
 ## Installation
 
-> **NOTE**: While this extension supports both Vale CLI and Vale Server, many of the extension's more [advanced features](#features) (such as Quick Fixes and Vocabulary Management) are only available through Vale Server.
-
-### Using Vale Server
-
-1. Install [Vale Server](https://errata.ai/vale-server/);
-
-2. install `vale-vscode` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server); and
-
-3. restart VS Code (recommended).
-
-### Using Vale
-
 1. Install [Vale](https://docs.errata.ai/vale/install);
-
 2. install `vale-vscode` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server);
-
-3. set [`vale.core.useCLI`](#settings) to `true` in the extension settings (_Preferences > Extensions > Vale > Use CLI_); and
-
-4. restart VS Code (recommended).
+3. restart VS Code (recommended).
 
 ## Features
 
@@ -46,72 +30,46 @@ Browse detailed information for each alert, including the file location, style, 
 
 Navigate from an in-editor alert to a rule's implementation on your `StylesPath` by clicking "View Rule".
 
-### Quick Fixes (Vale Server only)
+### Quick Fixes
 
 <p align="center">
   <img src="https://user-images.githubusercontent.com/8785025/89957413-2eabd780-dbec-11ea-97e1-9a04bce950ce.png" />
 </p>
 
-Fix misspellings, word usage, capitalization, and more using [Quick Fixes](https://code.visualstudio.com/docs/editor/refactoring#_code-actions-quick-fixes-and-refactorings) (macOS: <kbd>cmd</kbd> + <kbd>.</kbd>, Windows/Linux: <kbd>Ctrl</kbd> + <kbd>.</kbd>)
+Fix word usage, capitalization, and more using [Quick Fixes](https://code.visualstudio.com/docs/editor/refactoring#_code-actions-quick-fixes-and-refactorings) (macOS: <kbd>cmd</kbd> + <kbd>.</kbd>, Windows/Linux: <kbd>Ctrl</kbd> + <kbd>.</kbd>)
 
-### Vocab Management (Vale Server only)
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/8785025/89957619-b8f43b80-dbec-11ea-846d-0d9ee7f50088.png" />
-</p>
-
-Add words and phrases to your active Vocab through the in-editor context menu.
-
-<p align="center">
-  <img src="https://user-images.githubusercontent.com/8785025/89957701-f062e800-dbec-11ea-9d03-2d9ce2542f03.png" />
-</p>
-
-Jump to your active Vocab files directly from the Command Palette.
-
-### Folder Reports (Vale Server only)
-
-Use the `Vale: View Folder Report` command to generate a [report for the active folder](https://docs.errata.ai/vale-server/gui#summary).
+Spelling errors are currently not supported, but will be supported in a future version.
 
 ## Settings
 
-The extension offers a number of settings and configuration options (_Preferences > Extensions > Vale_), which are split into three groups: `Vale > Core` (Vale and Vale Server), `Vale > Server` (Vale Server only), and `Vale > Vale CLI` (Vale only).
+The extension offers a number of settings and configuration options (_Preferences > Extensions > Vale_)..
 
-- `vale.core.useCLI` (default: `false`): Use Vale CLI instead of Vale Server.
-
-- `vale.server.serverURL` (default: `http://127.0.0.1:7777`): URL to your running Vale Server instance.
-
-- `vale.server.provideFixes` (default: `true`): Offer solutions to alerts using the 'Quick Fix' button.
-
-  > **NOTE**: The fixes feature currently has an occasional issue when it reports that a "suggestion is out of date". We are working on a long-term fix, but in the meantime, saving the file fixes the issue.
-
-- `vale.server.lintContext` (default: `0`): Only lint the *active* portion of a document (as determined by the cursor position), allowing for efficient on-the-fly linting of large documents. There are three supported values: `-1` (applies to all files), `0` (disabled), `n` (applies to any file with `lines >= n`).
-
-- `vale.valeCLI.config` (default: `null`): Absolute path to a Vale configuration file. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference configuration file from a custom location. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.) If not specified, the extension uses the default search process (relative to the current file).
+- `vale.config` (default: `null`): Absolute path to a Vale configuration file. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference configuration file from a custom location. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.) If not specified, the extension uses the default search process (relative to the current file).
 
     **Example**
 
     ```jsonc
     {
       // You can use ${workspaceFolder} it will be replaced by workspace folder path
-      "vale.valeCLI.config": "${workspaceFolder}/node_modules/some-package/.vale.ini"
+      "vale.config": "${workspaceFolder}/node_modules/some-package/.vale.ini"
 
       // or use some absolute path
-      "vale.valeCLI.config": "/some/path/to/.vale.ini"
+      "vale.config": "/some/path/to/.vale.ini"
     }
     ```
 
-- `vale.valeCLI.path` (default: `null`): Absolute path to the Vale binary. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)
+- `vale.path` (default: `null`): Absolute path to the Vale binary. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)
 
     **Example**
 
     ```jsonc
     {
       // You can use ${workspaceFolder} it will be replaced by workspace folder path
-      "vale.valeCLI.path": "${workspaceFolder}/node_modules/.bin/vale"
+      "vale.path": "${workspaceFolder}/node_modules/.bin/vale"
 
       // or use some absolute path
-      "vale.valeCLI.path": "/some/path/to/vale"
+      "vale.path": "/some/path/to/vale"
     }
     ```
 
-- `vale.valeCLI.minAlertLevel` (default: `inherited`): Defines from which level of errors and above to display in the problems output.
+- `vale.minAlertLevel` (default: `inherited`): Defines from which level of errors and above to display in the problems output.

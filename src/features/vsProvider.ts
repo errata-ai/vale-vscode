@@ -2,21 +2,18 @@
 
 import * as path from "path";
 import * as fs from "fs";
-import * as request from "request-promise-native";
 import * as vscode from "vscode";
 
-import InitCommands from "./vsCommands";
 import * as utils from "./vsUtils";
 
-export default class ValeServerProvider implements vscode.CodeActionProvider {
+export default class ValeProvider implements vscode.CodeActionProvider {
   private diagnosticCollection!: vscode.DiagnosticCollection;
   private readabilityStatus!: vscode.StatusBarItem;
   private alertMap: Record<string, IValeErrorJSON> = {};
   private diagnosticMap: Record<string, vscode.Diagnostic[]> = {};
   private stylesPath!: string;
-  private useCLI!: boolean;
 
-  private static commandId: string = "ValeServerProvider.runCodeAction";
+  private static commandId: string = "ValeProvider.runCodeAction";
   private command!: vscode.Disposable;
   private logger!: vscode.OutputChannel;
 
@@ -29,33 +26,12 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     // Reset out alert map and run-time log:
     this.alertMap = {};
     this.logger.clear();
-
-    this.useCLI = configuration.get("vale.core.useCLI", false);
-
-    if (!this.useCLI) {
-      // We're using Vale Server ...
-      const limit = configuration.get("vale.server.lintContext", 0);
-
-      let response: string = "";
-      if (limit < 0 || (limit > 0 && textDocument.lineCount >= limit)) {
-        const ext = path.extname(textDocument.fileName);
-        const ctx = utils.findContext();
-
-        response = await utils.postString(ctx.Content, ext);
-        this.handleJSON(response, textDocument, ctx.Offset);
-      } else {
-        response = await utils.postFile(textDocument);
-        this.handleJSON(response, textDocument, 0);
-      }
-    } else {
-      // We're using the CLI ...
-      try {
-        await this.runVale(textDocument);
-      } catch (error) {
-        vscode.window.showErrorMessage(
-          `There was an error running Vale ${error}.`
-        );
-      }
+    try {
+      await this.runVale(textDocument);
+    } catch (error) {
+      vscode.window.showErrorMessage(
+        `There was an error running Vale ${error}.`
+      );
     }
   }
 
@@ -108,7 +84,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       const stdout = await utils.runInWorkspace(folder, command);
       this.handleJSON(stdout.toString(), file, 0);
     } catch (error) {
-      this.logger.appendLine(error);
+      this.logger.appendLine(error as string);
     }
   }
 
@@ -118,7 +94,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     offset: number
   ) {
     const diagnostics: vscode.Diagnostic[] = [];
-    const backend = this.useCLI ? "Vale" : "Vale Server";
+    const backend = "Vale";
     let body = JSON.parse(contents.toString());
     if (body.Code && body.Text) {
       this.logger.appendLine(body.Text);
@@ -169,51 +145,28 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
     let diagnostic: vscode.Diagnostic = context.diagnostics[0];
     let actions: vscode.CodeAction[] = [];
 
-    if (diagnostic === undefined || this.useCLI) {
-      return actions;
-    }
-
     let key = `${diagnostic.message}-${diagnostic.range}`;
     let alert = this.alertMap[key];
 
-    let server: string = vscode.workspace
-      .getConfiguration()
-      .get("vale.server.serverURL", "http://localhost:7777");
+    // Handles remove and replace as remove doesn't really need anything
+    // TODO: Handle spelling
+    const suggestion = alert.Action.Params[0];
+    const title = utils.toTitle(alert, suggestion as unknown as string);
+    const action = new vscode.CodeAction(title, vscode.CodeActionKind.QuickFix);
 
-    await request
-      .post({
-        uri: server + "/suggest",
-        qs: { alert: JSON.stringify(alert) },
-        json: true,
-      })
-      .catch((error) => {
-        return Promise.reject(`Vale Server could not connect: ${error}.`);
-      })
-      .then((body) => {
-        for (let idx in body["suggestions"]) {
-          const suggestion = body["suggestions"][idx];
-          const title = utils.toTitle(alert, suggestion);
-          const action = new vscode.CodeAction(
-            title,
-            vscode.CodeActionKind.QuickFix
-          );
+    action.command = {
+      title: title,
+      command: ValeProvider.commandId,
+      arguments: [
+        document,
+        diagnostic,
+        alert.Match,
+        suggestion,
+        alert.Action.Name,
+      ],
+    };
 
-          action.command = {
-            title: title,
-            command: ValeServerProvider.commandId,
-            arguments: [
-              document,
-              diagnostic,
-              alert.Match,
-              suggestion,
-              alert.Action.Name,
-            ],
-          };
-
-          actions.push(action);
-        }
-      });
-
+    actions.push(action);
     return actions;
   }
 
@@ -228,9 +181,8 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
     if (error === docError) {
       // Remove diagnostic from list
-      let diagnostics: vscode.Diagnostic[] = this.diagnosticMap[
-        document.uri.toString()
-      ];
+      let diagnostics: vscode.Diagnostic[] =
+        this.diagnosticMap[document.uri.toString()];
       let index: number = diagnostics.indexOf(diagnostic);
 
       diagnostics.splice(index, 1);
@@ -269,7 +221,7 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
 
     const configuration = vscode.workspace.getConfiguration();
     this.command = vscode.commands.registerCommand(
-      ValeServerProvider.commandId,
+      ValeProvider.commandId,
       this.runCodeAction,
       this
     );
@@ -280,11 +232,6 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       100
     );
     this.diagnosticCollection = vscode.languages.createDiagnosticCollection();
-
-    this.useCLI = configuration.get("vale.core.useCLI", false);
-    if (!this.useCLI) {
-      this.stylesPath = await utils.getStylesPath();
-    }
 
     vscode.workspace.onDidOpenTextDocument(this.doVale, this, subscriptions);
     vscode.workspace.onDidCloseTextDocument(
@@ -302,8 +249,6 @@ export default class ValeServerProvider implements vscode.CodeActionProvider {
       { scheme: "*", language: "*" },
       this
     );
-
-    InitCommands(subscriptions);
   }
 
   public dispose(): void {

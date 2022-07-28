@@ -1,7 +1,6 @@
 import * as path from "path";
 import * as which from "which";
 import * as fs from "fs";
-import * as request from "request-promise-native";
 import { execFile } from "child_process";
 
 import * as vscode from "vscode";
@@ -69,6 +68,8 @@ export const toTitle = (alert: IValeErrorJSON, suggestion: string): string => {
   switch (alert.Action.Name) {
     case "remove":
       return "Remove '" + alert.Match + "'";
+    case "replace":
+      return "Replace with '" + suggestion + "'";
   }
   return "Replace with '" + suggestion + "'";
 };
@@ -206,84 +207,6 @@ export const findContext = (): IEditorContext => {
   context.Offset = range.start.line;
 
   return context;
-};
-
-export const postFile = async (doc: vscode.TextDocument): Promise<string> => {
-  let server: string = vscode.workspace
-    .getConfiguration()
-    .get("vale.server.serverURL", "http://localhost:7777");
-  let response: string = "";
-
-  await request
-    .post({
-      uri: server + "/file",
-      qs: {
-        file: doc.fileName,
-        path: path.dirname(doc.fileName),
-      },
-      json: true,
-    })
-    .catch((error) => {
-      vscode.window.showErrorMessage(
-        `Vale Server could not connect: ${error}.`
-      );
-    })
-    .then((body) => {
-      response = fs.readFileSync(body.path).toString();
-    });
-
-  return response;
-};
-
-export const postString = async (
-  content: string,
-  ext: string
-): Promise<string> => {
-  let server: string = vscode.workspace
-    .getConfiguration()
-    .get("vale.server.serverURL", "http://localhost:7777");
-  let response: string = "";
-
-  await request
-    .post({
-      uri: server + "/vale",
-      qs: {
-        text: content,
-        format: ext,
-      },
-      json: false,
-    })
-    .catch((error) => {
-      vscode.window.showErrorMessage(
-        `Vale Server could not connect: ${error}.`
-      );
-    })
-    .then((body) => {
-      response = body;
-    });
-
-  return response;
-};
-
-export const getStylesPath = async (): Promise<string> => {
-  const configuration = vscode.workspace.getConfiguration();
-
-  let path: string = "";
-  let server: string = configuration.get(
-    "vale.server.serverURL",
-    "http://localhost:7777"
-  );
-
-  await request
-    .get({ uri: server + "/path", json: true })
-    .catch((error) => {
-      throw new Error(`Vale Server could not connect: ${error}.`);
-    })
-    .then((body) => {
-      path = body.path;
-    });
-
-  return path;
 };
 
 export const buildCommand = (
