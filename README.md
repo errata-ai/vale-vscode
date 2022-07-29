@@ -58,17 +58,17 @@ The extension offers a number of settings and configuration options (_Preference
     }
     ```
 
-- `vale.path` (default: `null`): Absolute path to the Vale binary. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)
+- `vale.valeCLI.path` (default: `null`): Absolute path to the Vale binary. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)
 
     **Example**
 
     ```jsonc
     {
       // You can use ${workspaceFolder} it will be replaced by workspace folder path
-      "vale.path": "${workspaceFolder}/node_modules/.bin/vale"
+      "vale.valeCLI.path": "${workspaceFolder}/node_modules/.bin/vale"
 
       // or use some absolute path
-      "vale.path": "/some/path/to/vale"
+      "vale.valeCLI.path": "/some/path/to/vale"
     }
     ```
 
