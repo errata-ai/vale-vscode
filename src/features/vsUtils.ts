@@ -1,6 +1,7 @@
 import * as path from "path";
 import * as which from "which";
 import * as fs from "fs";
+import * as os from "os";
 import { execFile } from "child_process";
 
 import * as vscode from "vscode";
@@ -20,15 +21,42 @@ function replaceWorkspaceFolder(logger: vscode.OutputChannel, customPath: string
   return null;
 }
 
-export const readBinaryLocation = (logger: vscode.OutputChannel, file: vscode.TextDocument): string | null => {
+export const readBinaryLocation = (context: vscode.ExtensionContext, logger: vscode.OutputChannel, file: vscode.TextDocument): string | null => {
   const configuration = vscode.workspace.getConfiguration();
 
-  let customBinaryPath = configuration.get<string>("vale.valeCLI.path");
-  if (customBinaryPath) {
-    return replaceWorkspaceFolder(logger, customBinaryPath, file);
+  const valeCLIUsage = configuration.get<string>("vale.valeCLI.usage")
+
+  if (valeCLIUsage === "Use embedded Vale CLI") {
+    return embeddedBinaryPath(context, logger);
+  } else if(valeCLIUsage === "Use Vale CLI specified in vale.valeCLI.path setting") {
+    let customBinaryPath = configuration.get<string>("vale.valeCLI.path");
+    if (customBinaryPath) {
+      return replaceWorkspaceFolder(logger, customBinaryPath, file);
+    }
+    logger.appendLine(`Falling back to embedded Vale CLI despite "Use Vale CLI specified in vale.valeCLI.path setting" specified because "vale.valeCLI.path" is empty.`);
+  } else if(valeCLIUsage === "Use Vale CLI available from system path") {
+    const valeOnSystemPath = which.sync("vale");
+    if (valeOnSystemPath !== null) {
+      return valeOnSystemPath;
+    }
   }
-  return which.sync("vale");
+
+  return embeddedBinaryPath(context, logger);
 };
+
+function embeddedBinaryPath(context: vscode.ExtensionContext, logger: vscode.OutputChannel): string {
+  const osPlatform = os.platform();
+  if(osPlatform === "win32") {
+    return context.asAbsolutePath(path.join('binaries', 'vale_2.20.1_Windows_64-bit', 'vale.exe'));
+  } else if(osPlatform === "linux"){
+    return context.asAbsolutePath(path.join('binaries', 'vale_2.20.1_Linux_64-bit', 'vale'));
+  } else if(osPlatform === "darwin") {
+    return context.asAbsolutePath(path.join('binaries', 'vale_2.20.1_macOS_64-bit', 'vale'));
+  } else {
+    logger.appendLine(`Cannot use embedded Vale CLI with OS Platform "${osPlatform}"`);
+    return "vale";
+  }
+}
 
 export const readFileLocation = (logger: vscode.OutputChannel, file: vscode.TextDocument): string | null => {
   const configuration = vscode.workspace.getConfiguration();
