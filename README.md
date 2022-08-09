@@ -44,32 +44,32 @@ Spelling errors are currently not supported, but will be supported in a future v
 
 The extension offers a number of settings and configuration options (_Preferences > Extensions > Vale_)..
 
-- `vale.config` (default: `null`): Absolute path to a Vale configuration file. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference configuration file from a custom location. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.) If not specified, the extension uses the default search process (relative to the current file).
+- `vale.valeCLI.config` (default: `null`): Absolute path to a Vale configuration file. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference configuration file from a custom location. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.) If not specified, the extension uses the default search process (relative to the current file).
 
     **Example**
 
     ```jsonc
     {
       // You can use ${workspaceFolder} it will be replaced by workspace folder path
-      "vale.config": "${workspaceFolder}/node_modules/some-package/.vale.ini"
+      "vale.valeCLI.config": "${workspaceFolder}/node_modules/some-package/.vale.ini"
 
       // or use some absolute path
-      "vale.config": "/some/path/to/.vale.ini"
+      "vale.valeCLI.config": "/some/path/to/.vale.ini"
     }
     ```
 
-- `vale.path` (default: `null`): Absolute path to the Vale binary. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)
+- `vale.valeCLI.path` (default: `null`): Absolute path to the Vale binary. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)
 
     **Example**
 
     ```jsonc
     {
       // You can use ${workspaceFolder} it will be replaced by workspace folder path
-      "vale.path": "${workspaceFolder}/node_modules/.bin/vale"
+      "vale.valeCLI.path": "${workspaceFolder}/node_modules/.bin/vale"
 
       // or use some absolute path
-      "vale.path": "/some/path/to/vale"
+      "vale.valeCLI.path": "/some/path/to/vale"
     }
     ```
 
-- `vale.minAlertLevel` (default: `inherited`): Defines from which level of errors and above to display in the problems output.
+- `vale.valeCLI.minAlertLevel` (default: `inherited`): Defines from which level of errors and above to display in the problems output.
