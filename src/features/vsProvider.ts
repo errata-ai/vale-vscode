@@ -18,7 +18,6 @@ export default class ValeProvider implements vscode.CodeActionProvider {
   private logger!: vscode.OutputChannel;
 
   private async doVale(textDocument: vscode.TextDocument) {
-    const configuration = vscode.workspace.getConfiguration();
     if (!utils.isElligibleDocument(textDocument)) {
       return;
     }
@@ -219,7 +218,6 @@ export default class ValeProvider implements vscode.CodeActionProvider {
   public async activate(subscriptions: vscode.Disposable[]) {
     this.logger = vscode.window.createOutputChannel("Vale");
 
-    const configuration = vscode.workspace.getConfiguration();
     this.command = vscode.commands.registerCommand(
       ValeProvider.commandId,
       this.runCodeAction,
