@@ -144,6 +144,13 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     let diagnostic: vscode.Diagnostic = context.diagnostics[0];
     let actions: vscode.CodeAction[] = [];
 
+    return actions;
+
+    /* TODO: This needs more work / testing.
+    if (diagnostic === undefined) {
+      return actions;
+    }
+
     let key = `${diagnostic.message}-${diagnostic.range}`;
     let alert = this.alertMap[key];
 
@@ -166,7 +173,7 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     };
 
     actions.push(action);
-    return actions;
+    return actions; */
   }
 
   private runCodeAction(
