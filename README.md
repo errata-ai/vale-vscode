@@ -8,9 +8,8 @@ As of **v0.15.0**, the extension drops support for [Vale Server](https://errata.
 
 ## Installation
 
-1. Install [Vale](https://docs.errata.ai/vale/install);
-2. install `vale-vscode` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server);
-3. restart VS Code (recommended).
+1. Install `vale-vscode` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server);
+2. Restart VS Code (recommended).
 
 ## Features
 
@@ -73,3 +72,5 @@ The extension offers a number of settings and configuration options (_Preference
     ```
 
 - `vale.valeCLI.minAlertLevel` (default: `inherited`): Defines from which level of errors and above to display in the problems output.
+
+- `vale.valeCLI.usage` (default: `Use Vale CLI specified in vale.valeCLI.path setting`): Define which Vale CLI to use. Check the description of each field to have more details in priority order and fallbacks. See `Output -> Vale` to see if a fallback has been used.

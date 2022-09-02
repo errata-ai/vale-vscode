@@ -1,0 +1,2 @@
+The following expression should raise an error detected by write-good pachage:
+a chip off the old block
