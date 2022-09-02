@@ -43,7 +43,7 @@
 					"default": null,
 					"markdownDescription": "Absolute path to the Vale binary. The predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable can be used to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)"
 				},
-				"vale.valeCLI.minAlertLevel": {
+				"vale.minAlertLevel": {
 					"scope": "resource",
 					"type": "string",
 					"default": "inherited",
@@ -91,11 +91,15 @@
 		"test-compile": "tsc -p ./"
 	},
 	"devDependencies": {
+		"@types/chai": "^4.3.3",
 		"@types/glob": "^7.2.0",
 		"@types/mocha": "^9.1.1",
 		"@types/node": "^18.0.0",
 		"@types/vscode": "^1.69.0",
 		"@types/which": "^2.0.1",
+		"@vscode/test-electron": "^2.1.5",
+		"async-wait-until": "^2.0.12",
+		"chai": "^4.3.6",
 		"glob": "^8.0.3",
 		"mocha": "^10.0.0",
 		"ts-loader": "^9.3.1",
@@ -106,7 +110,7 @@
 		"webpack-cli": "^4.10.0"
 	},
 	"dependencies": {
-		"which": "^2.0.2",
-		"fs": "0.0.1-security"
+		"fs": "0.0.1-security",
+		"which": "^2.0.2"
 	}
 }
