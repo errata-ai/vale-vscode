@@ -16,6 +16,11 @@ export default class ValeProvider implements vscode.CodeActionProvider {
   private static commandId: string = "ValeProvider.runCodeAction";
   private command!: vscode.Disposable;
   private logger!: vscode.OutputChannel;
+  private context: vscode.ExtensionContext;
+
+  constructor(context: vscode.ExtensionContext) {
+    this.context = context;
+  }
 
   private async doVale(textDocument: vscode.TextDocument) {
     if (!utils.isElligibleDocument(textDocument)) {
@@ -37,7 +42,7 @@ export default class ValeProvider implements vscode.CodeActionProvider {
   private async runVale(file: vscode.TextDocument) {
     const folder = path.dirname(file.fileName);
 
-    const binaryLocation = utils.readBinaryLocation(this.logger, file);
+    const binaryLocation = utils.readBinaryLocation(this.context, this.logger, file);
     const configLocation = utils.readFileLocation(this.logger, file);
     if (binaryLocation === null || configLocation === null) {
       // `file` is not part of the workspace, so we could not resolve a workspace-relative path. Ignore this file.

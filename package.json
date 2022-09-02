@@ -60,6 +60,22 @@
 						"Sets `minAlertLevel` to `error`, overriding any configuration files."
 					],
 					"markdownDescription": "Defines from which level of errors and above to display in the problems output."
+				},
+				"vale.valeCLI.usage": {
+					"scope": "resource",
+					"type": "string",
+					"default": "Use Vale CLI specified in vale.valeCLI.path setting",
+					"enum": [
+						"Use embedded Vale CLI",
+						"Use Vale CLI specified in vale.valeCLI.path setting",
+						"Use Vale CLI available from system path"
+					],
+					"enumDescriptions": [
+						"Use embedded Vale CLI. It is available for Linux, Mac and Windows; all in x64 architectures.",
+						"Use Vale CLI specified in vale.valeCLI.path setting in priority, if not available fall back to embedded",
+						"Use Vale CLI available from system path, if not available fall back to embedded"
+					],
+					"description": "Define which Vale CLI to use. Check the description of each field to have more details in priority order and fallbacks. See Output -> Vale to see if a fallback has been used."
 				}
 			}
 		}
