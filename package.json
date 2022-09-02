@@ -60,7 +60,12 @@
 						"Sets `minAlertLevel` to `error`, overriding any configuration files."
 					],
 					"markdownDescription": "Defines from which level of errors and above to display in the problems output."
-				}
+				},
+        "vale.doNotShowAgainWarningForFileToBeSavedBeforeLinting": {
+          "type": "boolean",
+          "default": false,
+          "description": "Do not show warning dialog that a file must be saved to have linting."
+        }
 			}
 		}
 	},

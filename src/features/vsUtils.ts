@@ -82,9 +82,22 @@ export const toTitle = (alert: IValeErrorJSON, suggestion: string): string => {
  * @param document The document to check
  * @return Whether the document is elligible
  */
-export const isElligibleDocument = (document: vscode.TextDocument): boolean => {
+export const isElligibleDocument = async (document: vscode.TextDocument): Promise<boolean> => {
   if (document.isDirty) {
-    vscode.window.showErrorMessage("Please save the file before linting.");
+    const config = vscode.workspace.getConfiguration('vale');
+    const shouldIgnore = config.get<boolean>('doNotShowAgainWarningForFileToBeSavedBeforeLinting') === true;
+    if (shouldIgnore) {
+      return false;
+    }
+
+    const abortAndDoNotShowAgain = 'Abort and do not show again this warning';
+    const choice = await vscode.window.showErrorMessage("Please save the file before linting.",
+      "Abort",
+      abortAndDoNotShowAgain
+    );
+    if (choice === abortAndDoNotShowAgain) {
+      await config.update('doNotShowAgainWarningForFileToBeSavedBeforeLinting', true, true);
+    }
     return false;
   }
   return vscode.languages.match({ scheme: "file" }, document) > 0;
