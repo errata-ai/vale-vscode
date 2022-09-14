@@ -15,6 +15,9 @@
 		"type": "git",
 		"url": "https://github.com/errata-ai/vale-vscode.git"
 	},
+  "sponsor": {
+    "url": "https://opencollective.com/vale"
+  },
 	"version": "0.15.2",
 	"engines": {
 		"vscode": "^1.69.0"
