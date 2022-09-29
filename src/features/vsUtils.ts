@@ -96,7 +96,7 @@ export const isElligibleDocument = async (document: vscode.TextDocument): Promis
       abortAndDoNotShowAgain
     );
     if (choice === abortAndDoNotShowAgain) {
-      await config.update('doNotShowAgainWarningForFileToBeSavedBeforeLinting', true, true);
+      await config.update('doNotShowWarningForFileToBeSavedBeforeLinting', true, true);
     }
     return false;
   }
