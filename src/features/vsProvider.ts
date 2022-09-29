@@ -18,7 +18,7 @@ export default class ValeProvider implements vscode.CodeActionProvider {
   private logger!: vscode.OutputChannel;
 
   private async doVale(textDocument: vscode.TextDocument) {
-    if (!utils.isElligibleDocument(textDocument)) {
+    if (!await utils.isElligibleDocument(textDocument)) {
       return;
     }
 
