@@ -64,7 +64,7 @@
         "vale.doNotShowWarningForFileToBeSavedBeforeLinting": {
           "type": "boolean",
           "default": false,
-          "description": "Do not show warning dialog that a file must be saved to have linting."
+          "description": "Do not show warning dialog that a file must be saved to be linted."
         }
 			}
 		}
