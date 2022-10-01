@@ -9,7 +9,7 @@ As of **v0.15.0**, the extension drops support for [Vale Server](https://errata.
 ## Installation
 
 1. Install [Vale](https://docs.errata.ai/vale/install);
-2. install `vale-vscode` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server);
+2. install `vale-server` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server);
 3. restart VS Code (recommended).
 
 ## Features
@@ -36,7 +36,7 @@ Navigate from an in-editor alert to a rule's implementation on your `StylesPath`
   <img src="https://user-images.githubusercontent.com/8785025/89957413-2eabd780-dbec-11ea-97e1-9a04bce950ce.png" />
 </p>
 
-Fix word usage, capitalization, and more using [Quick Fixes](https://code.visualstudio.com/docs/editor/refactoring#_code-actions-quick-fixes-and-refactorings) (macOS: <kbd>cmd</kbd> + <kbd>.</kbd>, Windows/Linux: <kbd>Ctrl</kbd> + <kbd>.</kbd>)
+Fix word usage, capitalization, and more using [Quick Fixes](https://code.visualstudio.com/docs/editor/refactoring#_code-actions-quick-fixes-and-refactorings) (macOS: <kbd>cmd</kbd> + <kbd>.</kbd>, Windows/Linux: <kbd>Ctrl</kbd> + <kbd>.</kbd>). The quick fixes feature depends on the underlying rule implementing an action that VSCode can then trigger.
 
 Spelling errors are currently not supported, but will be supported in a future version.
 
