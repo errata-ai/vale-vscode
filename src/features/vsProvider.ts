@@ -18,7 +18,7 @@ export default class ValeProvider implements vscode.CodeActionProvider {
   private logger!: vscode.OutputChannel;
 
   private async doVale(textDocument: vscode.TextDocument) {
-    if (!await utils.isElligibleDocument(textDocument)) {
+    if (!(await utils.isElligibleDocument(textDocument))) {
       return;
     }
 
@@ -117,8 +117,11 @@ export default class ValeProvider implements vscode.CodeActionProvider {
             backend,
             offset
           );
-
+          console.log("DIAG");
+          console.log(diagnostic);
           let key = `${diagnostic.message}-${diagnostic.range}`;
+          console.log("KEY");
+          console.log(key);
           this.alertMap[key] = alerts[i];
 
           diagnostics.push(diagnostic);
@@ -144,43 +147,46 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     let diagnostic: vscode.Diagnostic = context.diagnostics[0];
     let actions: vscode.CodeAction[] = [];
 
-    return actions;
-
-    /* TODO: This needs more work / testing.
-    if (diagnostic === undefined) {
-      return actions;
-    }
-
     let key = `${diagnostic.message}-${diagnostic.range}`;
     let alert = this.alertMap[key];
 
-    // Handles remove and replace as remove doesn't really need anything
-    // TODO: Handle spelling
-    const suggestion = alert.Action.Params[0];
-    const title = utils.toTitle(alert, suggestion as unknown as string);
-    const action = new vscode.CodeAction(title, vscode.CodeActionKind.QuickFix);
+    // TODO: Handle spelling, for now check we are not handling anything but replace or remove and so don't return empty actions.
+    // Also currently handles rules with no actions defined, so again doesn't return empty actions
+    if (alert.Action.Name !== "suggest" && alert.Action.Params !== null) {
+      console.log("AL");
+      console.log(alert.Action);
+      const suggestion = alert.Action;
+      const title = utils.toTitle(alert);
+      console.log("TT");
+      console.log(title);
+      const action = new vscode.CodeAction(
+        title,
+        vscode.CodeActionKind.QuickFix
+      );
 
-    action.command = {
-      title: title,
-      command: ValeProvider.commandId,
-      arguments: [
-        document,
-        diagnostic,
-        alert.Match,
-        suggestion,
-        alert.Action.Name,
-      ],
-    };
-
-    actions.push(action);
-    return actions; */
+      action.command = {
+        title: title,
+        command: ValeProvider.commandId,
+        arguments: [
+          document,
+          diagnostic,
+          alert.Match,
+          suggestion,
+          alert.Action.Name,
+        ],
+      };
+      console.log("ACT");
+      console.log(action.command);
+      actions.push(action);
+    }
+    return actions;
   }
 
   private runCodeAction(
     document: vscode.TextDocument,
     diagnostic: vscode.Diagnostic,
     error: string,
-    suggestion: string,
+    suggestion: IValeActionJSON,
     action: string
   ): any {
     let docError: string = document.getText(diagnostic.range);
@@ -199,9 +205,15 @@ export default class ValeProvider implements vscode.CodeActionProvider {
 
       // Insert the new text
       let edit = new vscode.WorkspaceEdit();
-      if (action !== "remove") {
-        edit.replace(document.uri, diagnostic.range, suggestion);
-      } else {
+      if (action === "replace") {
+        console.log("HERE");
+        console.log(suggestion);
+        edit.replace(
+          document.uri,
+          diagnostic.range,
+          suggestion.Params[0] as unknown as string
+        );
+      } else if (action === "remove") {
         // NOTE: we need to add a character when deleting to avoid leaving a
         // double space.
         const range = new vscode.Range(
