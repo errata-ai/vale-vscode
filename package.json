@@ -20,7 +20,7 @@
   },
   "version": "0.15.3",
   "engines": {
-    "vscode": "^1.71.0"
+    "vscode": "^1.72.0"
   },
   "categories": [
     "Linters"
@@ -85,8 +85,8 @@
   "devDependencies": {
     "@types/glob": "^8.0.0",
     "@types/mocha": "^10.0.0",
-    "@types/node": "^18.7.23",
-    "@types/vscode": "^1.71.0",
+    "@types/node": "^18.11.0",
+    "@types/vscode": "^1.72.0",
     "@types/which": "^2.0.1",
     "glob": "^8.0.3",
     "mocha": "^10.0.0",

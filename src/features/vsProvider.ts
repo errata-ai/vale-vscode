@@ -117,11 +117,7 @@ export default class ValeProvider implements vscode.CodeActionProvider {
             backend,
             offset
           );
-          console.log("DIAG");
-          console.log(diagnostic);
           let key = `${diagnostic.message}-${diagnostic.range}`;
-          console.log("KEY");
-          console.log(key);
           this.alertMap[key] = alerts[i];
 
           diagnostics.push(diagnostic);
@@ -147,18 +143,20 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     let diagnostic: vscode.Diagnostic = context.diagnostics[0];
     let actions: vscode.CodeAction[] = [];
 
+    // TODO: This needs more work / testing
+
+    if (diagnostic === undefined) {
+      return actions;
+    }
+
     let key = `${diagnostic.message}-${diagnostic.range}`;
     let alert = this.alertMap[key];
 
     // TODO: Handle spelling, for now check we are not handling anything but replace or remove and so don't return empty actions.
-    // Also currently handles rules with no actions defined, so again doesn't return empty actions
-    if (alert.Action.Name !== "suggest" && alert.Action.Params !== null) {
-      console.log("AL");
-      console.log(alert.Action);
+    // Also currently handles rules with no actions defined, name is empty, so again doesn't return empty actions
+    if (alert.Action.Name !== "suggest" && alert.Action.Name !== "") {
       const suggestion = alert.Action;
       const title = utils.toTitle(alert);
-      console.log("TT");
-      console.log(title);
       const action = new vscode.CodeAction(
         title,
         vscode.CodeActionKind.QuickFix
@@ -175,8 +173,6 @@ export default class ValeProvider implements vscode.CodeActionProvider {
           alert.Action.Name,
         ],
       };
-      console.log("ACT");
-      console.log(action.command);
       actions.push(action);
     }
     return actions;
@@ -206,8 +202,6 @@ export default class ValeProvider implements vscode.CodeActionProvider {
       // Insert the new text
       let edit = new vscode.WorkspaceEdit();
       if (action === "replace") {
-        console.log("HERE");
-        console.log(suggestion);
         edit.replace(
           document.uri,
           diagnostic.range,

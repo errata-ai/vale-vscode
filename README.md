@@ -42,7 +42,7 @@ Spelling errors are currently not supported, but will be supported in a future v
 
 ## Settings
 
-The extension offers a number of settings and configuration options (_Preferences > Extensions > Vale_)..
+The extension offers a number of settings and configuration options (_Preferences > Extensions > Vale_).
 
 - `vale.valeCLI.config` (default: `null`): Absolute path to a Vale configuration file. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference configuration file from a custom location. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.) If not specified, the extension uses the default search process (relative to the current file).
 
