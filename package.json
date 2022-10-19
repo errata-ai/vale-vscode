@@ -1,69 +1,69 @@
 {
-	"name": "vale-server",
-	"displayName": "Vale",
-	"icon": ".vscode/icon.png",
-	"description": "The official Visual Studio Code extension for Vale.",
-	"bugs": "https://github.com/errata-ai/vale-vscode/issues",
-	"author": {
-		"name": "Joseph Kato",
-		"email": "support@errata.ai",
-		"url": "https://github.com/errata-ai"
-	},
-	"publisher": "errata-ai",
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/errata-ai/vale-vscode.git"
-	},
+  "name": "vale-server",
+  "displayName": "Vale",
+  "icon": ".vscode/icon.png",
+  "description": "The official Visual Studio Code extension for Vale.",
+  "bugs": "https://github.com/errata-ai/vale-vscode/issues",
+  "author": {
+    "name": "Joseph Kato",
+    "email": "support@errata.ai",
+    "url": "https://github.com/errata-ai"
+  },
+  "publisher": "errata-ai",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/errata-ai/vale-vscode.git"
+  },
   "sponsor": {
     "url": "https://opencollective.com/vale"
   },
-	"version": "0.15.2",
-	"engines": {
-		"vscode": "^1.69.0"
-	},
-	"categories": [
-		"Linters"
-	],
-	"activationEvents": [
-		"onStartupFinished"
-	],
-	"main": "./dist/extension.js",
-	"contributes": {
-		"configuration": {
-			"type": "object",
-			"title": "Vale",
-			"properties": {
-				"vale.valeCLI.config": {
-					"scope": "resource",
-					"type": "string",
-					"default": null,
-					"description": "Absolute path to a Vale config file. If not specified, the default search process will be used (relative to the current file)."
-				},
-				"vale.valeCLI.path": {
-					"scope": "resource",
-					"type": "string",
-					"default": null,
-					"markdownDescription": "Absolute path to the Vale binary. The predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable can be used to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)"
-				},
-				"vale.valeCLI.minAlertLevel": {
-					"scope": "resource",
-					"type": "string",
-					"default": "inherited",
-					"enum": [
-						"inherited",
-						"suggestion",
-						"warning",
-						"error"
-					],
-					"markdownEnumDescriptions": [
-						"Inherits the `minAlertLevel` from the active configuration file.",
-						"Sets `minAlertLevel` to `suggestion`, overriding any configuration files.",
-						"Sets `minAlertLevel` to `warning`, overriding any configuration files.",
-						"Sets `minAlertLevel` to `error`, overriding any configuration files."
-					],
-					"markdownDescription": "Defines from which level of errors and above to display in the problems output."
-				},
+  "version": "0.15.3",
+  "engines": {
+    "vscode": "^1.72.0"
+  },
+  "categories": [
+    "Linters"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Vale",
+      "properties": {
+        "vale.valeCLI.config": {
+          "scope": "resource",
+          "type": "string",
+          "default": null,
+          "description": "Absolute path to a Vale config file. If not specified, the default search process will be used (relative to the current file)."
+        },
+        "vale.valeCLI.path": {
+          "scope": "resource",
+          "type": "string",
+          "default": null,
+          "markdownDescription": "Absolute path to the Vale binary. The predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable can be used to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)"
+        },
+        "vale.valeCLI.minAlertLevel": {
+          "scope": "resource",
+          "type": "string",
+          "default": "inherited",
+          "enum": [
+            "inherited",
+            "suggestion",
+            "warning",
+            "error"
+          ],
+          "markdownEnumDescriptions": [
+            "Inherits the `minAlertLevel` from the active configuration file.",
+            "Sets `minAlertLevel` to `suggestion`, overriding any configuration files.",
+            "Sets `minAlertLevel` to `warning`, overriding any configuration files.",
+            "Sets `minAlertLevel` to `error`, overriding any configuration files."
+          ],
+          "markdownDescription": "Defines from which level of errors and above to display in the problems output."
+        },
         "vale.doNotShowWarningForFileToBeSavedBeforeLinting": {
           "type": "boolean",
           "default": false,
@@ -84,37 +84,36 @@
           ],
           "markdownDescription": "Determines where file-level readability problems are displayed."
         }
-
-			}
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "webpack --mode production",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "yarn run compile",
-		"test": "node ./out/test/runTest.js",
-		"webpack": "webpack --mode development",
-		"webpack-dev": "webpack --mode development --watch",
-		"test-compile": "tsc -p ./"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.2.0",
-		"@types/mocha": "^9.1.1",
-		"@types/node": "^18.0.0",
-		"@types/vscode": "^1.69.0",
-		"@types/which": "^2.0.1",
-		"glob": "^8.0.3",
-		"mocha": "^10.0.0",
-		"ts-loader": "^9.3.1",
-		"tslint": "^6.1.3",
-		"typescript": "^4.7.4",
-		"vscode-test": "^1.6.1",
-		"webpack": "^5.73.0",
-		"webpack-cli": "^4.10.0"
-	},
-	"dependencies": {
-		"which": "^2.0.2",
-		"fs": "0.0.1-security"
-	}
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "webpack --mode production",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "yarn run compile",
+    "test": "node ./out/test/runTest.js",
+    "webpack": "webpack --mode development",
+    "webpack-dev": "webpack --mode development --watch",
+    "test-compile": "tsc -p ./"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.0.0",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^18.11.0",
+    "@types/vscode": "^1.72.0",
+    "@types/which": "^2.0.1",
+    "glob": "^8.0.3",
+    "mocha": "^10.0.0",
+    "ts-loader": "^9.4.1",
+    "tslint": "^6.1.3",
+    "typescript": "^4.8.4",
+    "vscode-test": "^1.6.1",
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
+  },
+  "dependencies": {
+    "which": "^2.0.2",
+    "fs": "0.0.1-security"
+  }
 }

@@ -7,20 +7,26 @@ import * as vscode from "vscode";
 
 // If `customPath` contains `${workspaceFolder}`, replaces it with the workspace that `file` comes from.
 // Return `null` if `customPath` contains `${workspaceFolder}` and `file` is _not_ part of the workspace.
-function replaceWorkspaceFolder(logger: vscode.OutputChannel, customPath: string, file: vscode.TextDocument): string | null {
+function replaceWorkspaceFolder(
+  logger: vscode.OutputChannel,
+  customPath: string,
+  file: vscode.TextDocument
+): string | null {
   customPath = path.normalize(customPath);
   const workspaceFolder = vscode.workspace.getWorkspaceFolder(file.uri);
   if (workspaceFolder) {
-    return customPath.replace(
-      "${workspaceFolder}",
-      workspaceFolder.uri.fsPath
-    );
+    return customPath.replace("${workspaceFolder}", workspaceFolder.uri.fsPath);
   }
-  logger.appendLine(`Not running Vale on file '${file.uri}' as it is not contained within the workspace`);
+  logger.appendLine(
+    `Not running Vale on file '${file.uri}' as it is not contained within the workspace`
+  );
   return null;
 }
 
-export const readBinaryLocation = (logger: vscode.OutputChannel, file: vscode.TextDocument): string | null => {
+export const readBinaryLocation = (
+  logger: vscode.OutputChannel,
+  file: vscode.TextDocument
+): string | null => {
   const configuration = vscode.workspace.getConfiguration();
 
   let customBinaryPath = configuration.get<string>("vale.valeCLI.path");
@@ -30,7 +36,10 @@ export const readBinaryLocation = (logger: vscode.OutputChannel, file: vscode.Te
   return which.sync("vale");
 };
 
-export const readFileLocation = (logger: vscode.OutputChannel, file: vscode.TextDocument): string | null => {
+export const readFileLocation = (
+  logger: vscode.OutputChannel,
+  file: vscode.TextDocument
+): string | null => {
   const configuration = vscode.workspace.getConfiguration();
 
   let customConfigPath = configuration.get<string>("vale.valeCLI.config");
@@ -64,14 +73,16 @@ export const toSeverity = (
  * @param alert The Vale-created alert
  * @param suggestion The vsengine-calculated suggestion
  */
-export const toTitle = (alert: IValeErrorJSON, suggestion: string): string => {
+// TODO: Handle spelling
+export const toTitle = (alert: IValeErrorJSON): string => {
   switch (alert.Action.Name) {
     case "remove":
       return "Remove '" + alert.Match + "'";
     case "replace":
-      return "Replace with '" + suggestion + "'";
+      return "Replace with '" + alert.Action.Params[0] + "'";
   }
-  return "Replace with '" + suggestion + "'";
+  // In theory this should never be triggered
+  return "No suggestion found";
 };
 
 /**
@@ -82,21 +93,30 @@ export const toTitle = (alert: IValeErrorJSON, suggestion: string): string => {
  * @param document The document to check
  * @return Whether the document is elligible
  */
-export const isElligibleDocument = async (document: vscode.TextDocument): Promise<boolean> => {
+export const isElligibleDocument = async (
+  document: vscode.TextDocument
+): Promise<boolean> => {
   if (document.isDirty) {
-    const config = vscode.workspace.getConfiguration('vale');
-    const shouldIgnore = config.get<boolean>('doNotShowWarningForFileToBeSavedBeforeLinting') === true;
+    const config = vscode.workspace.getConfiguration("vale");
+    const shouldIgnore =
+      config.get<boolean>("doNotShowWarningForFileToBeSavedBeforeLinting") ===
+      true;
     if (shouldIgnore) {
       return false;
     }
 
-    const abortAndDoNotShowAgain = 'Abort and do not show again this warning';
-    const choice = await vscode.window.showErrorMessage("Please save the file before linting.",
+    const abortAndDoNotShowAgain = "Abort and do not show again this warning";
+    const choice = await vscode.window.showErrorMessage(
+      "Please save the file before linting.",
       "Abort",
       abortAndDoNotShowAgain
     );
     if (choice === abortAndDoNotShowAgain) {
-      await config.update('doNotShowWarningForFileToBeSavedBeforeLinting', true, true);
+      await config.update(
+        "doNotShowWarningForFileToBeSavedBeforeLinting",
+        true,
+        true
+      );
     }
     return false;
   }
@@ -132,7 +152,7 @@ export const toDiagnostic = (
   if (alert.Link.length > 0) {
     diagnostic.code = {
       value: alert.Check,
-      target: vscode.Uri.parse(alert.Link)
+      target: vscode.Uri.parse(alert.Link),
     };
   } else {
     diagnostic.code = alert.Check;
