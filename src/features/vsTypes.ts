@@ -30,3 +30,8 @@ interface IValeErrorJSON {
   readonly Span: [number, number];
   readonly Severity: ValeSeverity;
 }
+
+/**
+ * Where to display file-level readability problems.
+ */
+type ValeReadabilityProblemLocation = "both" | "inline" | "status";

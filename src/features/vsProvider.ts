@@ -5,6 +5,7 @@ import * as fs from "fs";
 import * as vscode from "vscode";
 
 import * as utils from "./vsUtils";
+import { getReadabilityProblemLocation } from "./vsUtils";
 
 export default class ValeProvider implements vscode.CodeActionProvider {
   private diagnosticCollection!: vscode.DiagnosticCollection;
@@ -103,14 +104,20 @@ export default class ValeProvider implements vscode.CodeActionProvider {
       return;
     }
 
+    const readabilityProblemLocation = getReadabilityProblemLocation()
     this.readabilityStatus.hide();
+
     for (let key in body) {
       const alerts = body[key];
       for (var i = 0; i < alerts.length; ++i) {
-        if (alerts[i].Match === "") {
+        const isReadabilityProblem = alerts[i].Match === ""
+
+        if (isReadabilityProblem && readabilityProblemLocation !== "inline") {
           var readabilityMessage = alerts[0].Message;
           this.updateStatusBarItem(readabilityMessage);
-        } else {
+        }
+
+        if (!isReadabilityProblem || readabilityProblemLocation !== "status") {
           let diagnostic = utils.toDiagnostic(
             alerts[i],
             this.stylesPath,

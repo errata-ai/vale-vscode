@@ -266,3 +266,12 @@ export const buildCommand = (
   command = command.concat(["--output", "JSON", path]);
   return command;
 };
+
+export const getReadabilityProblemLocation = (): ValeReadabilityProblemLocation => {
+  const configuration = vscode.workspace.getConfiguration();
+
+  return configuration.get<ValeReadabilityProblemLocation>(
+    "vale.readabilityProblemLocation",
+    "status"
+  );
+}

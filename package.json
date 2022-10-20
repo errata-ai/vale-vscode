@@ -68,6 +68,21 @@
           "type": "boolean",
           "default": false,
           "description": "Do not show warning dialog that a file must be saved to be linted."
+        },
+        "vale.readabilityProblemLocation": {
+          "type": "string",
+          "enum": [
+            "status",
+            "inline",
+            "both"
+          ],
+          "default": "status",
+          "markdownEnumDescriptions": [
+            "Displays readability problems in the status bar.",
+            "Displays readability problems inline with other problems.",
+            "Displays readability problems both in the status bar and inline in the file."
+          ],
+          "markdownDescription": "Determines where file-level readability problems are displayed."
         }
       }
     }
