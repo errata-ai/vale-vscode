@@ -6,6 +6,7 @@ import * as vscode from "vscode";
 
 import * as utils from "./vsUtils";
 import { getReadabilityProblemLocation } from "./vsUtils";
+import {checkSpelling} from "./vsSpelling";
 
 export default class ValeProvider implements vscode.CodeActionProvider {
   private diagnosticCollection!: vscode.DiagnosticCollection;
@@ -161,7 +162,7 @@ export default class ValeProvider implements vscode.CodeActionProvider {
 
     // TODO: Handle spelling, for now check we are not handling anything but replace or remove and so don't return empty actions.
     // Also currently handles rules with no actions defined, name is empty, so again doesn't return empty actions
-    if (alert.Action.Name !== "suggest" && alert.Action.Name !== "") {
+    if (alert.Action.Name !== "") {
       const suggestion = alert.Action;
       const title = utils.toTitle(alert);
       const action = new vscode.CodeAction(
@@ -214,7 +215,17 @@ export default class ValeProvider implements vscode.CodeActionProvider {
           diagnostic.range,
           suggestion.Params[0] as unknown as string
         );
-      } else if (action === "remove") {
+      } else if (action === "suggest") {
+        if (suggestion.Params[0] as unknown as String === "spellings") {
+        // TODO: Sanity, dependency, and OS check
+        // TODO: Have to repass range, seems unnecessary
+        console.log("Spell");
+        console.log(suggestion.Params);
+        console.log(diagnostic);
+        checkSpelling(diagnostic.range, document);
+        }
+      } 
+      else if (action === "remove") {
         // NOTE: we need to add a character when deleting to avoid leaving a
         // double space.
         const range = new vscode.Range(

@@ -113,7 +113,9 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-    "which": "^2.0.2",
-    "fs": "0.0.1-security"
+    "fs": "0.0.1-security",
+    "node-addon-api": "^5.0.0",
+    "nodehun": "^3.0.2",
+    "which": "^2.0.2"
   }
 }
