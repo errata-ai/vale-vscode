@@ -80,6 +80,8 @@ export const toTitle = (alert: IValeErrorJSON): string => {
       return "Remove '" + alert.Match + "'";
     case "replace":
       return "Replace with '" + alert.Action.Params[0] + "'";
+    case "suggest":
+      // TODO:
   }
   // In theory this should never be triggered
   return "No suggestion found";
