@@ -81,7 +81,7 @@ export const toTitle = (alert: IValeErrorJSON): string => {
     case "replace":
       return "Replace with '" + alert.Action.Params[0] + "'";
     case "suggest":
-      // TODO:
+    // TODO:
   }
   // In theory this should never be triggered
   return "No suggestion found";

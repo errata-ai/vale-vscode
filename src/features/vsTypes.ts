@@ -13,7 +13,7 @@ interface IEditorContext {
  */
 interface IValeActionJSON {
   readonly Name: string;
-  readonly Params: [number, string];
+  readonly Params: [string];
 }
 
 /**

@@ -6,7 +6,7 @@ import * as vscode from "vscode";
 
 import * as utils from "./vsUtils";
 import { getReadabilityProblemLocation } from "./vsUtils";
-import {checkSpelling} from "./vsSpelling";
+import { getSuggestions } from "./vsSpelling";
 
 export default class ValeProvider implements vscode.CodeActionProvider {
   private diagnosticCollection!: vscode.DiagnosticCollection;
@@ -160,9 +160,31 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     let key = `${diagnostic.message}-${diagnostic.range}`;
     let alert = this.alertMap[key];
 
-    // TODO: Handle spelling, for now check we are not handling anything but replace or remove and so don't return empty actions.
-    // Also currently handles rules with no actions defined, name is empty, so again doesn't return empty actions
-    if (alert.Action.Name !== "") {
+    if (alert.Action.Name === "suggest") {
+      const suggestions: string[] = getSuggestions(range, document);
+      suggestions.forEach(word => {
+        const title = 'Replace with \'' + word + '\'';
+        const action = new vscode.CodeAction(
+          title,
+          vscode.CodeActionKind.QuickFix
+        );
+        const suggestion: IValeActionJSON = {Name: "replace", Params: [word]};
+
+        action.command = {
+          title: title,
+          command: ValeProvider.commandId,
+          arguments: [
+            document,
+            diagnostic,
+            alert.Match,
+            suggestion,
+            suggestion.Name
+          ]
+        };
+
+        actions.push(action);
+      });
+    } else if (alert.Action.Name !== "") {
       const suggestion = alert.Action;
       const title = utils.toTitle(alert);
       const action = new vscode.CodeAction(
@@ -210,22 +232,8 @@ export default class ValeProvider implements vscode.CodeActionProvider {
       // Insert the new text
       let edit = new vscode.WorkspaceEdit();
       if (action === "replace") {
-        edit.replace(
-          document.uri,
-          diagnostic.range,
-          suggestion.Params[0] as unknown as string
-        );
-      } else if (action === "suggest") {
-        if (suggestion.Params[0] as unknown as String === "spellings") {
-        // TODO: Sanity, dependency, and OS check
-        // TODO: Have to repass range, seems unnecessary
-        console.log("Spell");
-        console.log(suggestion.Params);
-        console.log(diagnostic);
-        checkSpelling(diagnostic.range, document);
-        }
-      } 
-      else if (action === "remove") {
+        edit.replace(document.uri, diagnostic.range, suggestion.Params[0]);
+      } else if (action === "remove") {
         // NOTE: we need to add a character when deleting to avoid leaving a
         // double space.
         const range = new vscode.Range(
