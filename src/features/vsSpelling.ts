@@ -1,12 +1,21 @@
 import * as vscode from "vscode";
 
+import nspell from "nspell";
+import dictionary from "dictionary-en";
+
 export const getSuggestions = (
   range: vscode.Range,
   file: vscode.TextDocument
-): string[] => {
-  // FIXME: call some library here ...
-  const word = file.getText(range);
-  return ['option 1', 'option 2', 'option 3'];
-}
+): Promise<string[]> =>
+  new Promise((resolve, reject) => {
+    const word = file.getText(range);
+    dictionary(function (error, en) {
+      if (error) {
+        reject(error)
+      }
+      const spell = nspell(en);
+      resolve(spell.suggest(word));
+    })
+  });
 
 

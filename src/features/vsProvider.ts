@@ -161,15 +161,16 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     let alert = this.alertMap[key];
 
     if (alert.Action.Name === "suggest") {
-      const suggestions: string[] = getSuggestions(range, document);
+      const suggestions: string[] = await getSuggestions(range, document);
+
       suggestions.forEach(word => {
         const title = 'Replace with \'' + word + '\'';
         const action = new vscode.CodeAction(
           title,
           vscode.CodeActionKind.QuickFix
         );
-        const suggestion: IValeActionJSON = {Name: "replace", Params: [word]};
 
+        const suggestion: IValeActionJSON = { Name: "replace", Params: [word] };
         action.command = {
           title: title,
           command: ValeProvider.commandId,
