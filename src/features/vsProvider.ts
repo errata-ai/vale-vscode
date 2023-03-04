@@ -152,7 +152,7 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     let actions: vscode.CodeAction[] = [];
 
     // TODO: This needs more work / testing
-
+console.log("provideCodeActions");
     if (diagnostic === undefined) {
       console.log("No diagnostic");
       return actions;
@@ -163,9 +163,9 @@ export default class ValeProvider implements vscode.CodeActionProvider {
 
     // TODO: Handle spelling, for now check we are not handling anything but replace or remove and so don't return empty actions.
     // Also currently handles rules with no actions defined, name is empty, so again doesn't return empty actions
+    // TODO: Is this precise enough for all potential suggest actions?
     if (
-      alert.Action.Name === "suggest" &&
-      (alert.Action.Params[0] as unknown as String) === "spellings"
+      alert.Action.Name === "suggest" 
     ) {
       // TODO: Sanity, dependency, and OS check
       // TODO: Have to repass range, seems unnecessary
