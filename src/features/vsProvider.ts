@@ -152,12 +152,11 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     let actions: vscode.CodeAction[] = [];
 
     // TODO: This needs more work / testing
-console.log("diag");
-console.log(diagnostic);
-    // if (diagnostic === undefined) {
-    //   console.log("No diagnostic");
-    //   return actions;
-    // }
+
+    if (diagnostic === undefined) {
+      console.log("No diagnostic");
+      return actions;
+    }
 
     let key = `${diagnostic.message}-${diagnostic.range}`;
     let alert = this.alertMap[key];
@@ -172,7 +171,7 @@ console.log(diagnostic);
       // TODO: Have to repass range, seems unnecessary
 
       
-      var suggestions = getSpellingSuggestions(diagnostic.range, document).then((values) => {
+      getSpellingSuggestions(diagnostic.range, document).then((values) => {
         console.log("values");
         console.log(values);
 
@@ -256,7 +255,7 @@ console.log(diagnostic);
       // return actions;
     }
 
-    if ((alert.Action.Name !== "") && (alert.Action.Name !== "suggest")) {
+    else if ((alert.Action.Name !== "") && (alert.Action.Name !== "suggest")) {
       console.log("NO" + alert.Action.Name);
       console.log(alert);
 
@@ -318,30 +317,7 @@ console.log(diagnostic);
       // Insert the new text
       let edit = new vscode.WorkspaceEdit();
       if (action === "replace") {
-        edit.replace(
-          document.uri,
-          diagnostic.range,
-          suggestion.Params[0] as unknown as string
-        );
-      } else if (action === "suggest") {
-        if ((suggestion.Params[0] as unknown as String) === "spellings") {
-          // TODO: Sanity, dependency, and OS check
-          // TODO: Have to repass range, seems unnecessary
-          console.log("Spell");
-          console.log(suggestion);
-          console.log(diagnostic);
-          // var suggestions = checkSpelling(diagnostic.range, document);
-          // Promise.all([suggestions]).then((values) => {
-          //   console.log("suggs");
-
-          //   console.log(values);
-            edit.replace(
-              document.uri,
-              diagnostic.range,
-              suggestion as unknown as string
-            );
-          // });
-        }
+        edit.replace(document.uri, diagnostic.range, suggestion.Params[0]);
       } else if (action === "remove") {
         // NOTE: we need to add a character when deleting to avoid leaving a
         // double space.
