@@ -41,7 +41,6 @@ export const getSpellingSuggestions = async (
   range: vscode.Range,
   file: vscode.TextDocument
 ): Promise<string[]> => {
-  console.log(range);
 const hunspellFactory = await loadModule();
 
 const affBuffer: ArrayBufferView = await readFile(path.join(dictPath, 'en_AU.aff'));
@@ -49,10 +48,6 @@ const dicBuffer: ArrayBufferView = await readFile(path.join(dictPath, 'en_AU.dic
 
 const affFile = hunspellFactory.mountBuffer(affBuffer, 'en_AU.aff');
 const dictFile = hunspellFactory.mountBuffer(dicBuffer, 'en_AU.dic');
-
-console.log("abuf " + affFile);
-console.log("dbuf " + dictFile);
-
 
 // const affFile = hunspellFactory.mountBuffer(affBuffer, 'en_AU.aff');
 // const dicFile = hunspellFactory.mountBuffer(dicBuffer, 'en_AU.dic');
@@ -73,7 +68,6 @@ console.log("dbuf " + dictFile);
 
 
 var errorText = file.getText(range);
-console.log(errorText);
 
 const hunspell = hunspellFactory.create(affFile, dictFile);
 
@@ -87,7 +81,6 @@ console.log(`check spell for word '${errorText}': ${misSpell}`);
   // console.assert(correctSpell === true);
 
   const suggestion = hunspell.suggest(errorText);
-  console.log(`spell suggestion for misspelled word '${errorText}': ${suggestion}`);
   // console.assert(suggestion[0] === correctWord);
 
 // hunspellFactory.mountBuffer(affFileBuffer,"/Library/Spelling/en_AU.aff" 

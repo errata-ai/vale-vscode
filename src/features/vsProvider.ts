@@ -170,34 +170,20 @@ console.log(diagnostic);
     ) {
       // TODO: Sanity, dependency, and OS check
       // TODO: Have to repass range, seems unnecessary
-      console.log("Spell2");
-      console.log(alert.Action.Params);
-      console.log(diagnostic);
-      var suggestions = getSpellingSuggestions(diagnostic.range, document);
-      console.log("suggs2");
-console.log(suggestions);
-      Promise.all([suggestions]).then((values) => {
 
-        // console.log(values);
-        // edit.replace(
-        //   document.uri,
-        //   diagnostic.range,
-        //   values[0] as unknown as string
-        // );
-        // values[0].forEach(word => {
-          var word = values[0].at(0);
-          console.log("word");
-          console.log(word);
+      
+      var suggestions = getSpellingSuggestions(diagnostic.range, document).then((values) => {
+        console.log("values");
+        console.log(values);
 
+        values.forEach(word => {
           const title = 'Replace with \'' + word + '\'';
           const action = new vscode.CodeAction(
             title,
             vscode.CodeActionKind.QuickFix
           );
-          const suggestion: IValeActionJSON = {Name: "replace", Params: [word]};
- console.log("new sugs");
- console.log(suggestion);
  
+          const suggestion: IValeActionJSON = { Name: "replace", Params: [word] };
           action.command = {
             title: title,
             command: ValeProvider.commandId,
@@ -209,21 +195,63 @@ console.log(suggestions);
               suggestion.Name
             ]
           };
-          console.log("spell act");
-          console.log(action);
+ console.log("action");
+  console.log(action);
           actions.push(action);
-
-      // });
-
-      }
-      )
-      
-      .finally(() => {;
-        console.log("here");
-        console.log("push act");
+        });
+        console.log("actions");
         console.log(actions);
-        return actions;
       });
+
+      // console.log(Promise.all([suggestions]));
+//       Promise.all([suggestions]).then((values) => {
+
+//         // console.log(values);
+//         // edit.replace(
+//         //   document.uri,
+//         //   diagnostic.range,
+//         //   values[0] as unknown as string
+//         // );
+        // values[0].forEach(word => {
+//           var word = values[0].at(0);
+//           console.log("word");
+//           console.log(word);
+
+//           const title = 'Replace with \'' + word + '\'';
+//           const action = new vscode.CodeAction(
+//             title,
+//             vscode.CodeActionKind.QuickFix
+//           );
+//           const suggestion: IValeActionJSON = {Name: "replace", Params: [word]};
+//  console.log("new sugs");
+//  console.log(suggestion);
+ 
+//           action.command = {
+//             title: title,
+//             command: ValeProvider.commandId,
+//             arguments: [
+//               document,
+//               diagnostic,
+//               alert.Match,
+//               suggestion,
+//               suggestion.Name
+//             ]
+//           };
+//           console.log("spell act");
+//           console.log(action);
+//           actions.push(action);
+
+//       // });
+
+//       }
+//       )
+      
+//       .finally(() => {;
+//         console.log("here");
+//         console.log("push act");
+//         console.log(actions);
+//         return actions;
+//       });
       // console.log(actions);
       // return actions;
     }
