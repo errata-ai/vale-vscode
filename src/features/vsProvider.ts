@@ -6,7 +6,7 @@ import * as vscode from "vscode";
 
 import * as utils from "./vsUtils";
 import { getReadabilityProblemLocation } from "./vsUtils";
-import {checkSpelling} from "./vsSpelling";
+import { getSpellingSuggestions } from "./vsSpelling";
 
 export default class ValeProvider implements vscode.CodeActionProvider {
   private diagnosticCollection!: vscode.DiagnosticCollection;
@@ -105,13 +105,13 @@ export default class ValeProvider implements vscode.CodeActionProvider {
       return;
     }
 
-    const readabilityProblemLocation = getReadabilityProblemLocation()
+    const readabilityProblemLocation = getReadabilityProblemLocation();
     this.readabilityStatus.hide();
 
     for (let key in body) {
       const alerts = body[key];
       for (var i = 0; i < alerts.length; ++i) {
-        const isReadabilityProblem = alerts[i].Match === ""
+        const isReadabilityProblem = alerts[i].Match === "";
 
         if (isReadabilityProblem && readabilityProblemLocation !== "inline") {
           var readabilityMessage = alerts[0].Message;
@@ -152,17 +152,86 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     let actions: vscode.CodeAction[] = [];
 
     // TODO: This needs more work / testing
-
-    if (diagnostic === undefined) {
-      return actions;
-    }
+console.log("diag");
+console.log(diagnostic);
+    // if (diagnostic === undefined) {
+    //   console.log("No diagnostic");
+    //   return actions;
+    // }
 
     let key = `${diagnostic.message}-${diagnostic.range}`;
     let alert = this.alertMap[key];
 
     // TODO: Handle spelling, for now check we are not handling anything but replace or remove and so don't return empty actions.
     // Also currently handles rules with no actions defined, name is empty, so again doesn't return empty actions
-    if (alert.Action.Name !== "") {
+    if (
+      alert.Action.Name === "suggest" &&
+      (alert.Action.Params[0] as unknown as String) === "spellings"
+    ) {
+      // TODO: Sanity, dependency, and OS check
+      // TODO: Have to repass range, seems unnecessary
+      console.log("Spell2");
+      console.log(alert.Action.Params);
+      console.log(diagnostic);
+      var suggestions = getSpellingSuggestions(diagnostic.range, document);
+      console.log("suggs2");
+console.log(suggestions);
+      Promise.all([suggestions]).then((values) => {
+
+        // console.log(values);
+        // edit.replace(
+        //   document.uri,
+        //   diagnostic.range,
+        //   values[0] as unknown as string
+        // );
+        // values[0].forEach(word => {
+          var word = values[0].at(0);
+          console.log("word");
+          console.log(word);
+
+          const title = 'Replace with \'' + word + '\'';
+          const action = new vscode.CodeAction(
+            title,
+            vscode.CodeActionKind.QuickFix
+          );
+          const suggestion: IValeActionJSON = {Name: "replace", Params: [word]};
+ console.log("new sugs");
+ console.log(suggestion);
+ 
+          action.command = {
+            title: title,
+            command: ValeProvider.commandId,
+            arguments: [
+              document,
+              diagnostic,
+              alert.Match,
+              suggestion,
+              suggestion.Name
+            ]
+          };
+          console.log("spell act");
+          console.log(action);
+          actions.push(action);
+
+      // });
+
+      }
+      )
+      
+      .finally(() => {;
+        console.log("here");
+        console.log("push act");
+        console.log(actions);
+        return actions;
+      });
+      // console.log(actions);
+      // return actions;
+    }
+
+    if ((alert.Action.Name !== "") && (alert.Action.Name !== "suggest")) {
+      console.log("NO" + alert.Action.Name);
+      console.log(alert);
+
       const suggestion = alert.Action;
       const title = utils.toTitle(alert);
       const action = new vscode.CodeAction(
@@ -181,9 +250,20 @@ export default class ValeProvider implements vscode.CodeActionProvider {
           alert.Action.Name,
         ],
       };
+      console.log("no spell act");
+      console.log(action);
       actions.push(action);
+      console.log("push act");
+      console.log(actions);
+
+      // console.log("end act");
+      // console.log(actions);
+      // return actions;
     }
-    return actions;
+      console.log("end act");
+      console.log(actions);
+      return actions;
+
   }
 
   private runCodeAction(
@@ -216,16 +296,25 @@ export default class ValeProvider implements vscode.CodeActionProvider {
           suggestion.Params[0] as unknown as string
         );
       } else if (action === "suggest") {
-        if (suggestion.Params[0] as unknown as String === "spellings") {
-        // TODO: Sanity, dependency, and OS check
-        // TODO: Have to repass range, seems unnecessary
-        console.log("Spell");
-        console.log(suggestion.Params);
-        console.log(diagnostic);
-        checkSpelling(diagnostic.range, document);
+        if ((suggestion.Params[0] as unknown as String) === "spellings") {
+          // TODO: Sanity, dependency, and OS check
+          // TODO: Have to repass range, seems unnecessary
+          console.log("Spell");
+          console.log(suggestion);
+          console.log(diagnostic);
+          // var suggestions = checkSpelling(diagnostic.range, document);
+          // Promise.all([suggestions]).then((values) => {
+          //   console.log("suggs");
+
+          //   console.log(values);
+            edit.replace(
+              document.uri,
+              diagnostic.range,
+              suggestion as unknown as string
+            );
+          // });
         }
-      } 
-      else if (action === "remove") {
+      } else if (action === "remove") {
         // NOTE: we need to add a character when deleting to avoid leaving a
         // double space.
         const range = new vscode.Range(

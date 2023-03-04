@@ -36,11 +36,11 @@ import { readFile } from "fs/promises";
 
 // const readFile = bindNodeCallback(fs.readFile);
 const dictPath = path.resolve('/Library/Spelling');
-
-export const checkSpelling = async (
+// TODO: Again was previously promise, is that better?
+export const getSpellingSuggestions = async (
   range: vscode.Range,
   file: vscode.TextDocument
-): Promise<Array<string>> => {
+): Promise<string[]> => {
   console.log(range);
 const hunspellFactory = await loadModule();
 

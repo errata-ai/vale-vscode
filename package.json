@@ -18,7 +18,7 @@
   "sponsor": {
     "url": "https://opencollective.com/vale"
   },
-  "version": "0.15.3",
+  "version": "0.16.0",
   "engines": {
     "vscode": "^1.72.0"
   },
@@ -93,7 +93,7 @@
     "watch": "tsc -watch -p ./",
     "pretest": "yarn run compile",
     "test": "node ./out/test/runTest.js",
-    "webpack": "webpack --mode development",
+    "webpack": "webpack --mode production",
     "webpack-dev": "webpack --mode development --watch",
     "test-compile": "tsc -p ./"
   },

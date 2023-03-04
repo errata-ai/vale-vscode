@@ -75,6 +75,9 @@ export const toSeverity = (
  */
 // TODO: Handle spelling
 export const toTitle = (alert: IValeErrorJSON): string => {
+  console.log('TT');
+  console.log(alert);
+
   switch (alert.Action.Name) {
     case "remove":
       return "Remove '" + alert.Match + "'";
