@@ -74,7 +74,6 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     const configOut = await utils.runInWorkspace(folder, stylesPath);
     try {
       const configCLI = JSON.parse(configOut);
-
       this.stylesPath = configCLI.StylesPath;
       const command = utils.buildCommand(
         binaryLocation,
@@ -152,9 +151,7 @@ export default class ValeProvider implements vscode.CodeActionProvider {
     let actions: vscode.CodeAction[] = [];
 
     // TODO: This needs more work / testing
-console.log("provideCodeActions");
     if (diagnostic === undefined) {
-      console.log("No diagnostic");
       return actions;
     }
 
@@ -164,101 +161,43 @@ console.log("provideCodeActions");
     // TODO: Handle spelling, for now check we are not handling anything but replace or remove and so don't return empty actions.
     // Also currently handles rules with no actions defined, name is empty, so again doesn't return empty actions
     // TODO: Is this precise enough for all potential suggest actions?
-    if (
-      alert.Action.Name === "suggest" 
-    ) {
+    const configuration = vscode.workspace.getConfiguration();
+    let spellingEnabled: boolean = configuration.get<boolean>(
+      "vale.enableSpellcheck",
+      false
+    );
+
+    if (alert.Action.Name === "suggest" && spellingEnabled == true) {
       // TODO: Sanity, dependency, and OS check
       // TODO: Have to repass range, seems unnecessary
+      const suggestions: string[] = await getSpellingSuggestions(
+        range,
+        document
+      );
 
-      
-      getSpellingSuggestions(diagnostic.range, document).then((values) => {
-        console.log("values");
-        console.log(values);
+      suggestions.forEach((word) => {
+        const title = "Replace with '" + word + "'";
+        const action = new vscode.CodeAction(
+          title,
+          vscode.CodeActionKind.QuickFix
+        );
 
-        values.forEach(word => {
-          const title = 'Replace with \'' + word + '\'';
-          const action = new vscode.CodeAction(
-            title,
-            vscode.CodeActionKind.QuickFix
-          );
- 
-          const suggestion: IValeActionJSON = { Name: "replace", Params: [word] };
-          action.command = {
-            title: title,
-            command: ValeProvider.commandId,
-            arguments: [
-              document,
-              diagnostic,
-              alert.Match,
-              suggestion,
-              suggestion.Name
-            ]
-          };
- console.log("action");
-  console.log(action);
-          actions.push(action);
-        });
-        console.log("actions");
-        console.log(actions);
+        const suggestion: IValeActionJSON = { Name: "replace", Params: [word] };
+        action.command = {
+          title: title,
+          command: ValeProvider.commandId,
+          arguments: [
+            document,
+            diagnostic,
+            alert.Match,
+            suggestion,
+            suggestion.Name,
+          ],
+        };
+
+        actions.push(action);
       });
-
-      // console.log(Promise.all([suggestions]));
-//       Promise.all([suggestions]).then((values) => {
-
-//         // console.log(values);
-//         // edit.replace(
-//         //   document.uri,
-//         //   diagnostic.range,
-//         //   values[0] as unknown as string
-//         // );
-        // values[0].forEach(word => {
-//           var word = values[0].at(0);
-//           console.log("word");
-//           console.log(word);
-
-//           const title = 'Replace with \'' + word + '\'';
-//           const action = new vscode.CodeAction(
-//             title,
-//             vscode.CodeActionKind.QuickFix
-//           );
-//           const suggestion: IValeActionJSON = {Name: "replace", Params: [word]};
-//  console.log("new sugs");
-//  console.log(suggestion);
- 
-//           action.command = {
-//             title: title,
-//             command: ValeProvider.commandId,
-//             arguments: [
-//               document,
-//               diagnostic,
-//               alert.Match,
-//               suggestion,
-//               suggestion.Name
-//             ]
-//           };
-//           console.log("spell act");
-//           console.log(action);
-//           actions.push(action);
-
-//       // });
-
-//       }
-//       )
-      
-//       .finally(() => {;
-//         console.log("here");
-//         console.log("push act");
-//         console.log(actions);
-//         return actions;
-//       });
-      // console.log(actions);
-      // return actions;
-    }
-
-    else if ((alert.Action.Name !== "") && (alert.Action.Name !== "suggest")) {
-      console.log("NO" + alert.Action.Name);
-      console.log(alert);
-
+    } else if (alert.Action.Name !== "") {
       const suggestion = alert.Action;
       const title = utils.toTitle(alert);
       const action = new vscode.CodeAction(
@@ -277,20 +216,9 @@ console.log("provideCodeActions");
           alert.Action.Name,
         ],
       };
-      console.log("no spell act");
-      console.log(action);
       actions.push(action);
-      console.log("push act");
-      console.log(actions);
-
-      // console.log("end act");
-      // console.log(actions);
-      // return actions;
     }
-      console.log("end act");
-      console.log(actions);
-      return actions;
-
+    return actions;
   }
 
   private runCodeAction(

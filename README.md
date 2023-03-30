@@ -38,7 +38,13 @@ Navigate from an in-editor alert to a rule's implementation on your `StylesPath`
 
 Fix word usage, capitalization, and more using [Quick Fixes](https://code.visualstudio.com/docs/editor/refactoring#_code-actions-quick-fixes-and-refactorings) (macOS: <kbd>cmd</kbd> + <kbd>.</kbd>, Windows/Linux: <kbd>Ctrl</kbd> + <kbd>.</kbd>). The quick fixes feature depends on the underlying rule implementing an action that VSCode can then trigger.
 
-Spelling errors are currently not supported, but will be supported in a future version.
+### Spell checking
+
+As of version 0.17.0, the extension supports spell-checking. The feature is new and likely to change, you can disable it from the settings if you use other spell checkers or experience performance issues.
+
+With no additional Vale configuration, the spell checker uses a Hunspell-compatible US English dictionary. If you want to use other custom dictionaries, then add and configure [a `spelling` style](https://vale.sh/docs/topics/styles/#spelling) with custom dictionaries.
+
+The extension doesn't support adding words to dictionaries. For now, the best option is to add them to ignore files or filters as described in the [Vale documentation](https://vale.sh/docs/topics/styles/#spelling).
 
 ## Settings
 
@@ -46,30 +52,30 @@ The extension offers a number of settings and configuration options (_Preference
 
 - `vale.valeCLI.config` (default: `null`): Absolute path to a Vale configuration file. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference configuration file from a custom location. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.) If not specified, the extension uses the default search process (relative to the current file).
 
-    **Example**
+  **Example**
 
-    ```jsonc
-    {
-      // You can use ${workspaceFolder} it will be replaced by workspace folder path
-      "vale.valeCLI.config": "${workspaceFolder}/node_modules/some-package/.vale.ini"
+  ```jsonc
+  {
+    // You can use ${workspaceFolder} it will be replaced by workspace folder path
+    "vale.valeCLI.config": "${workspaceFolder}/node_modules/some-package/.vale.ini"
 
-      // or use some absolute path
-      "vale.valeCLI.config": "/some/path/to/.vale.ini"
-    }
-    ```
+    // or use some absolute path
+    "vale.valeCLI.config": "/some/path/to/.vale.ini"
+  }
+  ```
 
 - `vale.valeCLI.path` (default: `null`): Absolute path to the Vale binary. Use the predefined [`${workspaceFolder}`](https://code.visualstudio.com/docs/editor/variables-reference#_predefined-variables) variable to reference a non-global binary. (**NOTE**: On Windows you can use '/' and can omit `.cmd` in the path value.)
 
-    **Example**
+  **Example**
 
-    ```jsonc
-    {
-      // You can use ${workspaceFolder} it will be replaced by workspace folder path
-      "vale.valeCLI.path": "${workspaceFolder}/node_modules/.bin/vale"
+  ```jsonc
+  {
+    // You can use ${workspaceFolder} it will be replaced by workspace folder path
+    "vale.valeCLI.path": "${workspaceFolder}/node_modules/.bin/vale"
 
-      // or use some absolute path
-      "vale.valeCLI.path": "/some/path/to/vale"
-    }
-    ```
+    // or use some absolute path
+    "vale.valeCLI.path": "/some/path/to/vale"
+  }
+  ```
 
 - `vale.valeCLI.minAlertLevel` (default: `inherited`): Defines from which level of errors and above to display in the problems output.

@@ -3,6 +3,8 @@
 "use strict";
 
 const path = require("path");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+
 
 /**
  @type {import('webpack').Configuration}
@@ -23,7 +25,7 @@ const config = {
   devtool: false,
   externals: {
     vscode: "commonjs vscode", // the vscode-module is created on-the-fly and must be excluded. Add other modules that cannot be webpack'ed, 📖 -> https://webpack.js.org/configuration/externals/
-  }, 
+  },
   resolve: {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
     extensions: [".ts", ".js"],
@@ -45,5 +47,13 @@ const config = {
       },
     ],
   },
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        path.resolve(__dirname, "node_modules", "dictionary-en", "index.aff"),
+        path.resolve(__dirname, "node_modules", "dictionary-en", "index.dic"),
+      ]
+    })
+  ]
 };
 module.exports = config;
