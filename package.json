@@ -1,24 +1,24 @@
 {
-  "name": "vale-server",
+  "name": "vale-vscode",
   "displayName": "Vale",
   "icon": ".vscode/icon.png",
   "description": "The official Visual Studio Code extension for Vale.",
-  "bugs": "https://github.com/errata-ai/vale-vscode/issues",
+  "bugs": "https://github.com/chrischinchilla/vale-vscode/issues",
   "author": {
-    "name": "Joseph Kato",
-    "email": "support@errata.ai",
-    "url": "https://github.com/errata-ai"
+    "name": "Chris Chinchilla",
+    "email": "chris@chrischinchilla.com",
+    "url": "https://github.com/chrischinchilla"
   },
-  "publisher": "errata-ai",
+  "publisher": "Chris Chinchilla",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/errata-ai/vale-vscode.git"
+    "url": "https://github.com/chrischinchilla/vale-vscode.git"
   },
   "sponsor": {
-    "url": "https://opencollective.com/vale"
+    "url": "https://github.com/sponsors/ChrisChinchilla"
   },
-  "version": "0.15.3",
+  "version": "0.16.0",
   "engines": {
     "vscode": "^1.72.0"
   },

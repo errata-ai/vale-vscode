@@ -1,6 +1,6 @@
 # Vale + VS Code
 
-> The official Visual Studio Code extension for [Vale](https://github.com/errata-ai/vale).
+> The official Visual Studio Code extension for [Vale](https://github.com/chrischinchilla/vale).
 
 The Vale extension for VS Code provides customizable spelling, style, and grammar checking for a variety of markup formats (Markdown, AsciiDoc, reStructuredText, HTML, and DITA).
 
@@ -9,7 +9,7 @@ As of **v0.15.0**, the extension drops support for [Vale Server](https://errata.
 ## Installation
 
 1. Install [Vale](https://docs.errata.ai/vale/install);
-2. install `vale-server` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=errata-ai.vale-server);
+2. install `vale-server` (this extension) via the [Marketplace](https://marketplace.visualstudio.com/items?itemName=chrischinchilla.vale-vscode);
 3. restart VS Code (recommended).
 
 ## Features
