@@ -1,9 +1,10 @@
 # Vale + VS Code
 
-> **Deprecation notice**
+> **Deprecation Notice:**
 > To reduce confusion over extenion naming in the long run and enable us to create a Vale VScode extenion with clearer naming, this extenion is now deprecated.
 > This extenion will continue to work, but future development will happen in a fork of the extension that you can find at [github.com/ChrisChinchilla/vale-vscode](https://github.com/ChrisChinchilla/vale-vscode) or by installing that extenion from the VSCode marketplace. 
 > When the marketplace accepts the new extension as the default version over this now deprecated version, then searching for a Vale extension in the VSCode marketplace should return the new extension.
+> See https://github.com/errata-ai/vale-vscode/issues/125 for more information.
 
 ---
 
