@@ -18,7 +18,7 @@
   "sponsor": {
     "url": "https://opencollective.com/vale"
   },
-  "version": "0.15.3",
+  "version": "0.15.4",
   "engines": {
     "vscode": "^1.72.0"
   },
